@@ -1,9 +1,12 @@
 # mpynn local Git baseline
 
-This working copy is a local `main` repository. It has no parent `origin` and
-nothing was pushed. Existing local source files were preserved; submodule HEAD
-and index setup did not checkout/reset source trees. Build products and Python
-test caches are excluded.
+The initial local baseline is commit `a09eaca47e44fd73f976a64d4d5cc31581208dde`
+on `main`. The publication remote is `https://gitee.com/wth_iw0/mpynn`; subsequent
+cleanup, documentation and demo changes are recorded as separate commits.
+Existing local source files were preserved; submodule HEAD/index setup did not
+checkout/reset source trees. Build products and Python test caches are excluded.
+The original baseline is a snapshot, not a fabricated reconstruction of earlier
+unrecorded implementation steps.
 
 ## Dependency gitlinks
 
@@ -47,6 +50,21 @@ that commit's blob hashes. Missing upstream ancillary files and the two local
 records can make its working tree appear modified. They were preserved rather
 than replaced with a full checkout. That local state does not change its parent
 gitlink; do not blindly reset it to make the display clean.
+
+## External tests and user demos
+
+The initial baseline included `tests/`. The later source-layout cleanup moved
+that entire project test tree to workspace `tests/`, beside this repository.
+Raspberry Pi smoke/benchmark/fixture Python utilities moved there as well.
+The mpynn Git diff therefore shows removal of the old in-repository test paths;
+their current source is preserved outside this repository, not deleted from the
+workspace. Previous overlapping sibling variants were archived under
+`build/test-migration-backup/previous-sibling-tests/` before merging.
+
+User examples are maintained in `demo/`, independently of development tests.
+Normal firmware builds do not need the external tests: `check-config` uses its
+port-owned `ports/raspberrypi/config_checks.c`. The independent VC4 runtime's own
+submodule tests are outside the scope of this main-project move.
 
 ## Routine commands
 

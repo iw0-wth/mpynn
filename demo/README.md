@@ -1,10 +1,39 @@
-# mpynn 独立演示与实板验收
+# mpynn 独立用户演示
 
-本目录用于**用户演示**；不引用开发测试目录。不要混用开发 test 脚本。
-建议把 `demo` 目录（含 `__init__.py`、`network` 子目录和 `ml.py`）复制到板端 `/demo`。ML/file-media 演示只读取 SD 上用户明确提供的模型、图片和 WAV 文件，不采集摄像头、不显示 IDE 预览、不联网、不自动写盘。
+本目录用于**用户演示**；不引用开发测试目录。开发测试与板级 smoke/bench 已统一归属 workspace 根目录的 `tests/raspberrypi`，与 `mpynn` 同级；测试脚本保留在测试树，不作为导入即运行的 demo 搬入本目录。
+建议把整个 `demo` 目录（含各层 `__init__.py` 和模型资产）复制到板端 `/demo`。示例按 `system/`、`network/`、`ai/` 分类，操作指南在 `docs/`。ML/file-media 演示只读取 SD 上用户明确提供的模型、图片和 WAV 文件，不采集摄像头、不显示 IDE 预览、不联网、不自动写盘。
 电脑配套脚本只在电脑上执行；不需要上传它来测试板子。
 
-## 当前进度
+## 开箱运行的 VC4 加速项目
+
+[稠密特征评分器](ai/vc4_acceleration/README.md) 已配齐 `model.tflite`、确定性输入和参考数据。
+把整个 demo 复制到 SD 后即可运行，不需要自行准备模型：
+
+```python
+from demo.ai import vc4_acceleration
+result = vc4_acceleration.run()
+```
+
+它用同一 FP32 2048→1024 模型比较 CPU/VC4，展示评分、平均耗时和实测加速比，检查两组
+输入的所有输出，并从本次诊断标记之后确认 packed16 单dispatch完成。模型约8 MiB，
+需要当前 packed16 VC4 固件；导入不执行推理，运行不联网、不写盘，结束保留日志。
+历史相同模型在700/250基线约6.56x；示例始终打印本次实测值，不预置性能结论。
+
+## 英文文本分类项目
+
+[textcls](ai/textcls/README.md) 配齐已修正的 TFLM 模型、词表与 11 类标签，直接运行：
+
+```python
+from demo.ai import textcls
+textcls.run()
+```
+
+自定义文本可调用 `Classifier.classify()`，详见项目说明。该模型是小词表演示，返回原始
+分类评分而非概率，默认走 reference CPU；不要把它当成任意文本识别器或 VC4 加速基准。
+
+## 状态与历史记录
+
+以下镜像大小、哈希和旧反馈保留作历史记录，并非当前构建的固定身份。使用 `board.show()` 记录实际运行的 build_id，再与该镜像的构建记录核对；修改独立 demo 不会更新内核身份。原生 UML/TFLM、ulab、文件媒体和可选 VC4 已有实现；用户模型是否使用 QPU 要看运行时 dispatch 日志，不能由 backend 名称或计时推断。
 
 - 已有实板证据：Pi 1B Rev2 / revision14 / 512MiB；此前锁定镜像的
   `f452e679...927b6e` 与用户输出匹配。**用户已确认 SD 卡读写正常。**
@@ -12,11 +41,10 @@
 DHCP/UDP/DNS/HTTPS 以及 TCP 服务端的实板结果。SD“读写正常”不会被扩展成上述全部通过。
 - 已实现并编译：RTC/time、f/t-string、冻结库、UDP/TCP基础收发与监听、DNS A、
   标准 ssl/mbedTLS、超时/poll/端点查询及诊断接口。
-- 仍有工程缺口：socket 并非完整CPython/POSIX（部分选项/真实半关闭/IPv6），
-  其它外设和实际AI后端未完整接入。显式TCP bind reservation、SO_TYPE/UDP SO_BROADCAST getsockopt和静态服务名已接入；更多选项、真实半关闭、IPv6仍未完整支持。
+- 仍有工程缺口：socket 并非完整CPython/POSIX；更多选项/flags 和其它外设尚未完整支持，IPv6不在当前范围。真实TCP半关闭、显式TCP bind reservation、SO_TYPE/UDP SO_BROADCAST getsockopt和静态服务名已接入；代码/主机验证不能替代实板记录。
 - 上游 `lib/` 只读；适配与工具产物均在端口层和项目 `build/`。
 
-当前开发镜像（含ssl、静态网络、socket选项、严格地址、隐式listen及accept资源保护；新API需更新内核）：
+此前开发镜像记录（含ssl、静态网络、socket选项、严格地址、隐式listen及accept资源保护；新API需更新内核）：
 - `../build/RPI1B/bin/kernel.img`：1,387,424 字节
 - SHA-256：`4fefeedbd0f3dc4dedd493ba2fde07de7ac15b4ea45c93380413365a6ce062f1`
 - build_id：`e74b1a787e3c4ed9b29cd003d73af8db53edf2aa8a21ea004d7e6896ff092ebf`
@@ -30,10 +58,15 @@ DHCP/UDP/DNS/HTTPS 以及 TCP 服务端的实板结果。SD“读写正常”不
 
 | 文件 | 用途 | 导入后的显式入口 |
 |---|---|---|
-| board.py | 型号/版本/存储/根目录，只读 | `board.show()` |
-| storage.py | 文件读写和冷启动持久性 | `inspect/roundtrip/prepare/verify_after_reboot/cleanup` |
-| rtc.py | RTC/time一致性，可选手工设时 | `show/check/set_utc` |
-| language.py | f/t-string和冻结库导入 | `language.run()` |
+| system/board.py | 型号/build_id/存储/内存/时钟/可用machine API，只读 | `board.show()` |
+| system/storage.py | 文件读写和冷启动持久性 | `inspect/roundtrip/prepare/verify_after_reboot/cleanup` |
+| system/rtc.py | RTC/time一致性，可选手工设时 | `show/check/set_utc` |
+| system/language.py | f/t-string和冻结库导入 | `language.run()` |
+| ai/media.py | 标量模型、文件图像、WAV/PCM | `infer/infer_callable/image_tensor/stream_wav` |
+| ai/vc4.py | 用户模型与ndarray，reference/VC4输出及计时 | `vc4.run(model_path, inputs, backend='vc4')` / `vc4.compare(model_path, inputs)` |
+| ai/vc4_acceleration/ | 配齐模型的稠密评分器，直接展示加速与本次GPU执行证据 | `vc4_acceleration.run()` |
+| ai/textcls/ | 配齐模型、词表和11类标签的英文文本分类 | `textcls.run()` / `textcls.Classifier().classify(text)` |
+| docs/ | 板端操作、历史进度和检查清单 | 阅读对应 Markdown |
 | network/lan.py | LAN9512/DHCP诊断 | `lan.run()` |
 | network/udp.py | UDP二进制和空报文echo | `udp.client(host)` / `udp.server()` |
 | network/tcp.py | TCP客户端/服务端echo及非阻塞握手 | `tcp.client(host)` / `tcp.server()` / `tcp.connect_nonblocking(host)` |
@@ -54,11 +87,11 @@ DHCP/UDP/DNS/HTTPS 以及 TCP 服务端的实板结果。SD“读写正常”不
 然后执行：
 
 ```python
-from demo import ml
-print(ml.infer('/hello_world_float.tflite', 0.0))
-print(ml.infer_callable('/hello_world_float.tflite', 0.25))
-outputs = ml.image_tensor('/red.png', '/hello_world_float.tflite')
-chunks = ml.stream_wav('/input.wav', samples=320)
+from demo.ai import media
+print(media.infer('/hello_world_float.tflite', 0.0))
+print(media.infer_callable('/hello_world_float.tflite', 0.25))
+outputs = media.image_tensor('/red.png', '/hello_world_float.tflite')
+chunks = media.stream_wav('/input.wav', samples=320)
 print('chunks:', len(chunks), 'first_bytes:', len(chunks[0]) if chunks else 0)
 ```
 
@@ -70,10 +103,34 @@ print('chunks:', len(chunks), 'first_bytes:', len(chunks[0]) if chunks else 0)
 - `stream_wav()` 使用文件型 PCM16 WAV；没有 USB/I2S/ADC 实时采集。
 - 这些入口均不自动写 SD、不访问摄像头、不联网，也不连接 IDE 预览。
 
+### 用户模型的 reference / VC4 演示
+
+使用支持 `ml.Model(..., backend=...)` 的当前固件。先准备用户自己的 `.tflite` 文件，并按模型输入 shape/dtype 构造 ulab ndarray；下面仅举单输入 FP32、shape 为 `(1, 4)` 的模型，数值和维度应按自己的模型调整：
+
+```python
+from ulab import numpy as np
+from demo.ai import vc4
+x = np.array([[0.25, -0.5, 0.125, 1.0]], dtype=np.float)
+result = vc4.run('/my_model.tflite', x, backend='reference',
+                 arena_size=2 * 1024 * 1024, warmup=1, repeat=5)
+print(result['outputs'], result['avg_us'])
+both = vc4.compare('/my_model.tflite', [x], warmup=2, repeat=10,
+                   rearm=True)
+print(both['reference']['outputs'], both['vc4']['outputs'])
+```
+
+- `run(..., backend='reference'/'vc4')` 返回 `outputs`、`total_us`、`avg_us`、`warmup`、`repeat` 和 `backend`；多输入模型传 `[x0, x1, ...]`。不生成固定输入、不读取 golden，不下载模型或写文件。输入 dtype 由原生 Model 检查，返回 ndarray 在模型释放后仍归用户持有。
+- `compare()` 对相同输入分别新建 reference 和 VC4 模型，返回两份结果及观察到的 `speedup`；输出由用户按模型需求比较，没有固定误差阈值或自动 PASS。reference 表示禁用 VC4 的当前 CPU 路径。
+- 计时仅覆盖重复 `predict()`，不含模型加载、Prepare、warmup、输出打印及日志读取；每次预测的输出分配包含在内。保持 repeat 足够短以避免 ticks 环绕歧义；很短的模型可能计为零，此时比值为 `None`。结果受时钟、模型与运行状态影响，不预先承诺加速。
+- 每次运行都在 `finally` 中 `deinit()`、恢复先前的 `machine.vc4()` 并回收 GC，包括输入形状不匹配、推理中断和异常。切换会在模型构造前完成；不要在并行推理期间改变进程级开关。
+- 默认运行结束后只调用一次 `machine.logs(clear=False, limit=16384)`，显示保留日志快照，可能含以前的记录；不消费日志，不循环重复前缀。旧固件若不支持非消费读取则提示更新，不退回消费 API。`diagnostics=False` 可关闭，`vc4.snapshot()` 可手工查看。
+- `rearm=True` 显式调用 `machine.vc4_reset_diagnostics()`，重新开放有界诊断采样，但不清空旧日志；默认不重置。旧固件缺少该 API 时给出错误，可用 `rearm=False` 或升级固件。诊断采样状态不会随机器开关恢复。
+- VC4 只是允许卸载；算子、FP32 FC 形状、运行时时钟门槛、内存或其它运行条件仍可使模型走 CPU。观察当前运行的 dispatch-complete / FC timing 日志确认 QPU 使用；单凭输出一致、backend 标签或速度比不能确认硬件卸载。
+
 ### 2. 信息、RTC和语法
 
 ```python
-from demo import board, rtc, language
+from demo.system import board, rtc, language
 board.show()
 rtc.check()
 language.run()
@@ -87,7 +144,7 @@ language.run()
 SD已正常，不必为每个网络测试再执行写盘步骤。需要复核时先备份卡：
 
 ```python
-from demo import storage
+from demo.system import storage
 storage.inspect()
 storage.roundtrip(write=True)  # 独占创建、读回、删除自己的演示文件
 ```
@@ -101,7 +158,7 @@ storage.prepare(write=True)  # 保留 /__mpynn_demo_persist__.bin
 正常关闭文件和同步后，完全断电再上电：
 
 ```python
-from demo import storage
+from demo.system import storage
 storage.verify_after_reboot()  # 只读核对；必须确实冷启动才算持久性通过
 storage.cleanup(confirm=True)
 ```
@@ -266,5 +323,21 @@ https.run('https://你的服务器/', ca_path='/ca.pem')
 URL实际主机名；错误CA/主机名/有效期应失败，不降级到CERT_NONE。
 NTP本身不是认证时间源；当前RTC/证书时间范围受2038边界限制。
 
-完整检查项及当前证据见 **TEST_CHECKLIST.md**。开发时主机测试仍留在原测试目录，
-它们不能当作用户demo，也不等同于实板通过。
+## 原板级脚本与现有 demo 的覆盖关系
+
+下表记录原 `mpynn/tests/raspberrypi` 板级脚本的用户用法去向。原 smoke、断言、固定模型/golden、主机回归和端口 VC4 smoke/bench 保留为 workspace `tests/raspberrypi` 中的开发测试；本目录复用已有入口，避免复制一套自动运行测试。
+
+| 原脚本/主题 | 用户演示入口 | 范围 |
+|---|---|---|
+| `network_smoke.py`、`ethernet_demo.py` | `network.lan.run/use_static/use_dhcp` | DHCP、状态与静态IPv4；显式调用才等待网络 |
+| `udp_echo_client.py`、`udp_echo_demo.py` | `network.udp.client/server` + `network.pc_echo` | 有界UDP二进制/空报文echo及电脑配套 |
+| `tcp_client_demo.py`、`tcp_server_demo.py` | `network.tcp.client/server/connect_nonblocking/half_close` | 有界TCP交互、poll和半关闭 |
+| `dns_smoke.py`、`network_socket_contract.py` | `network.resolver`、`network.options` | 显式DNS查询、地址/选项演示；开发契约断言保留测试树 |
+| `tls_client_demo.py` | `network.https.run(url, ca_path=...)`、`sync_time` | 用户URL与CA路径，主动校时；不在导入时联网 |
+| `sd_smoke.py`、`thonny_smoke.py` 的文件用法 | `storage.inspect/roundtrip/prepare/verify_after_reboot/cleanup` | 显式写盘开关和独占文件；Thonny/REPL协议及冷启动步骤仍由用户单独验证 |
+| `rtc_smoke.py`、`time_smoke.py` | `rtc.show/check/set_utc` | 读时、走时和显式手工设时；无电池保持 |
+| `syntax_smoke.py`、`frozen_libs_smoke.py` | `language.run` | 固件语法与冻结库 |
+| `machine_smoke.py` 的信息查询 | `board.show` | 只读报告 unique_id、频率、内存和API是否存在；不配置GPIO、不屏蔽IRQ、不启动WDT或总线 |
+| 端口 `ml_smoke.py`、VC4 smoke/bench | `ml`、`vc4.run/compare` | 用户模型/媒体；固定fixture、golden和硬件验收仍是开发测试 |
+
+完整检查项及历史证据见 [docs/TEST_CHECKLIST.md](docs/TEST_CHECKLIST.md)。开发测试统一位于 workspace 根目录 `tests`，不能当作用户demo，也不等同于实板通过。
