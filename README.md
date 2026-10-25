@@ -246,6 +246,20 @@ make TARGET=RPI1B -j8 PYTHON=D:/anaconda3/python.exe
 工具链与本机 Python 3。默认输出在 `build/RPI1B/bin/`，包括镜像、ELF、map 与布局报告；
 对象、Circle 构建 stage 和工具产物也在 `build/` 中，不修改既有上游源码。
 
+默认 `make` 或 `make ... kernel` 只产出内核。需要完整 SD 镜像时选择：
+
+```sh
+make -C ports/raspberrypi/boards/RPI1B sd-image -j8 \
+  PYTHON=D:/anaconda3/python.exe SD_BOOT_DIR=/d/openmv_aicore/RPI1B-SD/boot
+```
+
+`sd-image` 先构建当前内核，再将本地启动文件、当前板配置和内核打包为
+`build/RPI1B/bin/mpynn-RPI1B-sd.img`。默认仅一个128 MiB FAT16分区，1 MiB对齐，
+镜像总长129 MiB；刷到更大的卡后其余空间不分配、不自动扩容。分区大小可用
+`SD_PARTITION_MIB` 修改；`SD_INCLUDE_DEMO=1` 将分类后的演示和配套模型复制到分区内
+`/demo`，自定义文件用 `SD_EXTRA_DIR` 显式加入。默认不插入demo或启动脚本；启用demo也
+只复制文件，不自动运行或冻结进内核。
+
 将生成的镜像与板级启动配置、匹配的 Raspberry Pi boot firmware 配合使用。构建过程
 不格式化或写入物理 SD 卡。UART0 为 115200 8N1。详细步骤与新板型接入见
 [RPI1B 构建说明](ports/raspberrypi/boards/RPI1B/README.md)。

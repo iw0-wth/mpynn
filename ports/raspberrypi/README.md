@@ -79,7 +79,13 @@ configurable with `CROSS_COMPILE=...`. CMake is not needed for this Circle phase
 The top-level RPI1B route does not require OpenMV SDK and does not enter the old
 port makefiles. Other target names are still the original reference routes.
 
-Outputs are under `../../build/RPI1B/bin`: kernel.elf, kernel.map and kernel.img.
+Default `all` / explicit `kernel` outputs are under `../../build/RPI1B/bin`:
+kernel.elf, kernel.map and kernel.img. Optional `sd-image` builds that kernel
+first and packages an MBR + 128 MiB FAT16 volume using locally supplied
+`SD_BOOT_DIR` firmware. `SD_INCLUDE_DEMO=1` copies the classified demo tree as
+`/demo`; default images contain no demo or automatic main script. Remaining
+space on a larger card is left unpartitioned. See the board build guide for
+`SD_PARTITION_MIB`, `SD_EXTRA_DIR`, output/report variables and flashing scope.
 MicroPython objects live under `../../build/RPI1B/micropython`. Circle core is
 staged under `../../build/RPI1B/circle`, leaving upstream source unchanged. The
 helper fingerprints sources, headers, toolchain identity and settings and rejects

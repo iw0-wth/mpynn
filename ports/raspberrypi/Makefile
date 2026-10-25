@@ -144,8 +144,30 @@ VC4_FORCE_SYMBOLS := -u vc4_init -u vc4_runtime_status -u vc4_is_available \
 # replacements ahead of MicroPython/libc headers for the rest of the C port.
 $(BUILD)/socket_errno_bridge.o: CFLAGS += -idirafter $(CIRCLEHOME)/include
 
-.PHONY: circle all check-config
-all: check-config $(FW_DIR)/kernel.img
+# Optional whole-card image packaging. The boot firmware is supplied locally;
+# no build downloads firmware or writes physical disks. Paths resolve here.
+SD_BOOT_DIR ?= $(CIRCLEHOME)/boot
+SD_PARTITION_MIB ?= 128
+SD_EXTRA_DIR ?=
+SD_INCLUDE_DEMO ?= 0
+SD_DEMO_DIR ?= $(MPYNN_TOP)/demo
+ifneq ($(filter $(SD_INCLUDE_DEMO),0 1),$(SD_INCLUDE_DEMO))
+$(error SD_INCLUDE_DEMO must be 0 or 1)
+endif
+SD_IMAGE ?= $(FW_DIR)/mpynn-$(BOARD)-sd.img
+SD_IMAGE_REPORT ?= $(SD_IMAGE:.img=.json)
+.PHONY: circle all kernel sd-image check-sd-inputs check-config
+all: kernel
+kernel: check-config $(FW_DIR)/kernel.img
+check-sd-inputs:
+	$(Q)$(PYTHON) -B tools/make_sd_image.py --check-inputs --boot-dir "$(SD_BOOT_DIR)" \
+	    --config "$(BOARD_DIR)/config.txt"
+sd-image: check-sd-inputs kernel
+	$(Q)$(PYTHON) -B tools/make_sd_image.py --boot-dir "$(SD_BOOT_DIR)" \
+	    --kernel "$(FW_DIR)/kernel.img" --config "$(BOARD_DIR)/config.txt" \
+	    --output "$(SD_IMAGE)" --report "$(SD_IMAGE_REPORT)" \
+	    --partition-mib "$(SD_PARTITION_MIB)" $(if $(SD_EXTRA_DIR),--extra-dir "$(SD_EXTRA_DIR)") \
+	    $(if $(filter 1,$(SD_INCLUDE_DEMO)),--demo-dir "$(SD_DEMO_DIR)")
 check-config:
 	$(Q)$(CC) $(CFLAGS) -fsyntax-only config_checks.c
 # Configuration-signed build stage: never reuse another board's Circle objects.
