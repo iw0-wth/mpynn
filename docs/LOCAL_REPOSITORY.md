@@ -1,7 +1,9 @@
 # mpynn local Git baseline
 
 The initial local baseline is commit `a09eaca47e44fd73f976a64d4d5cc31581208dde`
-on `main`. The publication remote is `https://gitee.com/wth_iw0/mpynn`; subsequent
+on `main`. The primary publication repository is `https://github.com/iw0-wth/mpynn`
+(SSH: `git@github.com:iw0-wth/mpynn.git`), with `https://gitee.com/wth_iw0/mpynn`
+retained as a mirror. Subsequent
 cleanup, documentation and demo changes are recorded as separate commits.
 Existing local source files were preserved; submodule HEAD/index setup did not
 checkout/reset source trees. Build products and Python test caches are excluded.
@@ -19,7 +21,7 @@ repositories. Paths retain the OpenMV layout, including `lib/tflm/libtflm`.
 | lib/micropython | https://github.com/micropython/micropython | 0fd6c573ea815774668bbb16b8e197c8822368b2 |
 | modules/ulab | https://github.com/v923z/micropython-ulab | d161443327173bcf94c2616cb5de37e290af71ca |
 | lib/tflm/libtflm | https://gitee.com/wth_iw0/libtflm-mpynn | 9008e63d0acb5a3c739a46af85636e837c6835b2 |
-| lib/vc4-runtime | https://gitee.com/wth_iw0/vc4-runtime | 92faccf96be7edb65ddfe2138192e0ac2d6f793f |
+| lib/vc4-runtime | https://github.com/iw0-wth/vc4-runtime | 284d73c2876fc53f53009b1e14bd1f4306419f06 |
 | lib/circle | https://gitee.com/wth_iw0/circle | 7a81e1b480fe7d19fc1fc695b89bff0a0848f44b |
 | lib/apriltag | https://github.com/openmv/apriltag.git | 636b9ba14ba8485c9fc09590cd4ef53f11427966 |
 | tools/alif | https://github.com/micropython/alif-security-toolkit.git | 63698efe8567eed115fe620d5e5de75f460310d7 |
@@ -30,6 +32,14 @@ verified against original OpenMV commit
 `222310c96500a7f6d63a37ae90e02db8dbbe35f7`, identified by its source ZIP comment.
 All 4,488 original ZIP blobs match that commit's recursive Git tree. AprilTag,
 alif and microdot remain uninitialized empty directories locally.
+
+The external TFLM-VC4 source repository is
+`https://github.com/iw0-wth/tflite-micro-vc4`, pinned for the documented build to
+`7cfd402ebb0cafa95021bc893ddcd74d4ef7f952`. It remains a sibling checkout named
+`tflite-micro`, not an additional gitlink in this parent. The latest commits
+update READMEs; the VC4 range from the old pin also adds a LICENSE, with no
+runtime code changes. Network-local Gitee URL overrides are
+documented in the main README without changing the pinned commits.
 
 ## Local development state
 

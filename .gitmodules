@@ -24,4 +24,4 @@
 	url = https://gitee.com/wth_iw0/circle
 [submodule "lib/vc4-runtime"]
 	path = lib/vc4-runtime
-	url = https://gitee.com/wth_iw0/vc4-runtime
+	url = https://github.com/iw0-wth/vc4-runtime

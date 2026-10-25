@@ -1,41 +1,51 @@
 # mpynn — MicroPython Neural Network
 
-**mpynn（MicroPython Neural Network）是为 AI 推理与计算特化的 MicroPython 固件项目。**
-它以 OpenMV 的工程组织和 ML API 设计为起点，保留 `ml.Model` 作为公共入口，使用标准
-MicroPython 内核、TFLM 推理引擎和可替换的硬件后端，聚焦神经网络、张量计算及设备应用。
+English | [简体中文](README.zh-CN.md)
 
-mpynn 同时保留**以自身为基础继续移植 OpenMV 功能的能力**：保留相关源码、工程组织和
-可扩展的板级/模块边界，便于后续按目标硬件接入图像处理、采集、显示或其他 OpenMV
-能力。AI 特化体现在默认固件的取舍；这些能力需要实际移植和验证后启用，并非当前所有
-端口已经具备完整 OpenMV 兼容性。
+Project home: [GitHub](https://github.com/iw0-wth/mpynn) · [Gitee mirror](https://gitee.com/wth_iw0/mpynn)
 
-当前主要目标是 **Raspberry Pi 1 Model B / BCM2835 / VideoCore IV**：由 Circle
-提供裸机平台服务，MicroPython 提供交互、脚本和文件系统，TFLM 执行模型，VC4 加速
-符合条件的 FP32 全连接层。Windows 端口用于真实 MicroPython/原生 ML 栈的 host 验证。
-其他板型可沿板级入口扩展，现有旧板型目录不代表已经完成 mpynn 适配。
+**mpynn (MicroPython Neural Network) is a MicroPython firmware project specialized for AI inference and computation.**
+It takes OpenMV's project organization and ML API design as its starting point, retains `ml.Model` as the public
+entry point, and uses the standard MicroPython core, the TFLM inference engine, and replaceable hardware backends,
+focusing on neural networks, tensor computation, and device applications.
 
-**未来端口将重点面向带 NPU 的 MCU，以及算力与内存足够的 SoC。** 新端口围绕可用的
-推理引擎、NPU/GPU/CPU 后端、张量内存与数据通路适配，尽量复用公共 Python API 和模型
-生命周期；RPI1B/VC4 是当前落地目标，不限定项目长期只支持树莓派或某一种加速器。
+mpynn also retains **the ability to serve as a foundation for further ports of OpenMV features**: it keeps the
+relevant source code, project organization, and extensible board/module boundaries to support later integration
+of image processing, capture, display, or other OpenMV capabilities for target hardware. Its AI specialization
+is reflected in the choices made for the default firmware; these capabilities require actual porting and
+validation before they can be enabled, and full OpenMV compatibility is not currently available on every port.
 
-## 来源与版本基线
+The current primary target is **Raspberry Pi 1 Model B / BCM2835 / VideoCore IV**: Circle provides bare-metal
+platform services, MicroPython provides interaction, scripting, and the filesystem, TFLM executes models, and
+VC4 accelerates eligible FP32 fully connected layers. The Windows port provides host validation using the real
+MicroPython/native ML stack. Other boards can be added through board-level entry points; existing legacy board
+directories do not indicate completed mpynn support.
 
-本项目的 OpenMV 工程基线来自工作区的 `D:/openmv_aicore/openmv-master`，对应：
+**Future ports will focus on MCUs with NPUs and SoCs with sufficient compute capacity and memory.** New ports
+will adapt to the available inference engine, NPU/GPU/CPU backends, tensor memory, and data paths, reusing the
+public Python API and model lifecycle where possible. RPI1B/VC4 is the current implementation target; it does
+not limit the project's long-term scope to Raspberry Pi or any single type of accelerator.
 
-- 上游仓库：[openmv/openmv](https://github.com/openmv/openmv)。
-- 上游提交：[`222310c96500a7f6d63a37ae90e02db8dbbe35f7`](https://github.com/openmv/openmv/commit/222310c96500a7f6d63a37ae90e02db8dbbe35f7)。
-- 定位依据：原始源码 ZIP 的 Git 提交标识，并与该提交的 Git tree/blob 逐文件核对；
-  本地 `openmv-master` 目录的 4,488 个上游文件也全部匹配，无缺失或内容差异。
-  不能用归档名 `master` 或 `SDK_VERSION=1.7.3` 代替准确版本。
+## Origins and Version Baseline
 
-这是 **OpenMV 工程的来源版本**，不是当前所有依赖的版本。mpynn 已将 MicroPython
-切换到标准内核 v1.29.0，并按 [.gitmodules](.gitmodules) 独立固定其他依赖。
-原 OpenMV 的品牌、相机产品介绍及其完整功能列表不作为 mpynn 的功能承诺。
+The project's OpenMV baseline comes from `D:/openmv_aicore/openmv-master` in the workspace, corresponding to:
 
-## 项目定位与执行关系
+- Upstream repository: [openmv/openmv](https://github.com/openmv/openmv).
+- Upstream commit: [`222310c96500a7f6d63a37ae90e02db8dbbe35f7`](https://github.com/openmv/openmv/commit/222310c96500a7f6d63a37ae90e02db8dbbe35f7).
+- Identification: the Git commit identifier in the original source ZIP, checked file by file against that
+  commit's Git tree/blobs. All 4,488 upstream files in the local `openmv-master` directory also match, with
+  no missing files or content differences. Neither the archive name `master` nor `SDK_VERSION=1.7.3` is an
+  adequate substitute for the exact version.
 
-mpynn 面向由用户提供模型和数据的推理应用：张量、文件图像、文件音频、网络与板级 I/O
-可以组合使用，摄像头和 IDE 预览不是 ML 运行的前提。
+This identifies **the source version of the OpenMV project**, not the versions of all current dependencies.
+mpynn has switched to the standard MicroPython v1.29.0 core and pins other dependencies independently through
+[.gitmodules](.gitmodules). The original OpenMV branding, camera product descriptions, and full feature list
+do not constitute a feature commitment for mpynn.
+
+## Project Scope and Execution Structure
+
+mpynn targets inference applications in which users supply models and data: tensors, image files, audio files,
+networking, and board-level I/O can be combined. Cameras and IDE previews are not prerequisites for running ML.
 
 ```text
 Python application
@@ -48,94 +58,101 @@ Python application
                                                     Circle adapter on RPI1B
 ```
 
-各层职责：
+Responsibilities of each layer:
 
-| 层 | 当前实现与职责 |
+| Layer | Current implementation and responsibilities |
 | --- | --- |
-| Python API | 保留 `ml.Model`，处理标签、预处理、回调及 backend 选择 |
-| 原生绑定 | `uml.Model` 加载模型、管理 arena、转换 tensor，输出独立 ulab 数组 |
-| 推理引擎 | 一份 TFLM archive，标准算子注册，按支持条件选择 CPU 或 VC4 |
-| VC4 runtime | 常驻权重、packed16、multi-tile、QPU 提交、缓存、超时及诊断状态 |
-| 平台适配 | Circle 管理启动、内存/IRQ、SD、USB 网络及协作调度；通过 C 接口接入 runtime |
+| Python API | Retains `ml.Model`; handles labels, preprocessing, callbacks, and backend selection |
+| Native bindings | `uml.Model` loads models, manages the arena, converts tensors, and returns independent ulab arrays |
+| Inference engine | One TFLM archive, standard operator registration, and CPU or VC4 selection according to support conditions |
+| VC4 runtime | Resident weights, packed16, multi-tile, QPU submission, caching, timeouts, and diagnostic state |
+| Platform adaptation | Circle manages startup, memory/IRQs, SD, USB networking, and cooperative scheduling; connects to the runtime through a C interface |
 
-[vc4-runtime](lib/vc4-runtime/README.md) 与其中提供的 TFLM-VC4 接入文件为 mpynn 编写，
-也可供其他 BCM VC4 项目使用。runtime 本体不依赖 Circle 或 MicroPython；其他裸机框架
-可以提供同一平台接口。当前实现与实测基线是 BCM2835，其他 SoC 需要核对硬件协议并验证。
+[vc4-runtime](lib/vc4-runtime/README.md) and its included TFLM-VC4 integration files were written for mpynn and
+can also be used by other BCM VC4 projects. The runtime itself does not depend on Circle or MicroPython;
+other bare-metal frameworks can implement the same platform interface. BCM2835 is the current implementation
+and hardware-tested baseline. Other SoCs require hardware protocol checks and validation.
 
-## 相比 OpenMV：裁剪、保留与替换
+## Changes from OpenMV: Removed, Retained, and Replaced
 
-这里的“裁剪”主要指 **当前 RPI1B 固件的源码选择与功能配置**。仓库中保留的历史端口、
-厂商 SDK、驱动和示例不一定被删除，但不会因此自动进入 Pi 固件。保留这些资产也是为了
-继续以 mpynn 为基础移植 OpenMV；后续端口可按需求恢复并适配相关模块，无需把相机/IDE
-链路设为 AI 核心运行的强制依赖。
+Here, “removed” primarily refers to **source selection and feature configuration in the current RPI1B firmware**.
+Legacy ports, vendor SDKs, drivers, and examples retained in the repository have not necessarily been deleted,
+but their presence does not automatically include them in the Pi firmware. These assets are also retained to
+support further ports of OpenMV features on top of mpynn. Future ports can restore and adapt the relevant
+modules as needed, without making the camera/IDE path a mandatory dependency of the AI core.
 
-| 对象 | RPI1B 当前处理 |
+| Component | Current treatment on RPI1B |
 | --- | --- |
-| OpenMV 相机 sensor/CSI、传感器探测及采集 | 不编入；不提供伪造摄像头数据的 stub |
-| 摄像头 framebuffer、快照/流媒体、IDE 图像预览 | 不编入 |
-| OpenMV IDE transport、调试/RPC 协议与相机控制链 | 不编入；使用标准 MicroPython raw/friendly REPL |
-| LCD/display 与相机板专用时钟/GPIO/USB 启动约定 | 不作为 Pi 端口依赖 |
-| STM32、Alif、i.MX RT 等旧板型与 HAL | 保留源码供参考，当前 Pi 构建不选择 |
-| CMSIS-NN/DSP、Ethos-U、ST/Alif 专用加速链 | 当前 Pi ML 路径不使用 |
-| 完整 OpenMV 图像分析库 | 不作为原生 image 模块整体迁入；替换为独立文件图像子集 |
-| MicroPython | 使用标准 v1.29.0 内核，平台差异放在端口与受控适配层 |
-| OpenMV ML Python 包及 `ml.Model` 设计 | 保留并接入新的原生绑定/TFLM 后端，解除对摄像头的依赖 |
-| ulab | 保留原生 C 张量计算，配置支持四维 ndarray |
-| TFLM | 保留标准模型/schema/解释器和算子 API，特化 FP32 FC |
-| requests / ntptime 等 Python 库 | 通过 manifest 使用标准 micropython-lib 包 |
-| AprilTag、其他未启用子模块 | 保留原 OpenMV 指针，不代表在 Pi 上启用 |
+| OpenMV camera sensor/CSI, sensor detection, and capture | Not compiled in; no stub that fabricates camera data |
+| Camera framebuffer, snapshots/streaming, and IDE image preview | Not compiled in |
+| OpenMV IDE transport, debugging/RPC protocols, and camera control path | Not compiled in; uses standard MicroPython raw/friendly REPL |
+| LCD/display and camera-board-specific clock/GPIO/USB startup conventions | Not dependencies of the Pi port |
+| Legacy boards and HALs such as STM32, Alif, and i.MX RT | Source retained for reference; not selected by the current Pi build |
+| CMSIS-NN/DSP, Ethos-U, and ST/Alif-specific acceleration paths | Not used by the current Pi ML path |
+| Full OpenMV image analysis library | Not imported wholesale as the native image module; replaced by an independent file-image subset |
+| MicroPython | Uses the standard v1.29.0 core, with platform differences in the port and controlled adaptation layers |
+| OpenMV ML Python package and `ml.Model` design | Retained and connected to the new native bindings/TFLM backend, with the camera dependency removed |
+| ulab | Retains native C tensor computation, configured to support four-dimensional ndarrays |
+| TFLM | Retains the standard model/schema/interpreter and operator APIs, with FP32 FC specialization |
+| Python libraries such as requests / ntptime | Uses standard micropython-lib packages through manifests |
+| AprilTag and other disabled submodules | Retains the original OpenMV pointers; this does not indicate that they are enabled on Pi |
 
-详细比较见 [OPENMV_CUTS.md](ports/raspberrypi/OPENMV_CUTS.md)。该文档和阶段性状态文件
-包含历史快照；当前功能选择以端口源码、配置和本 README 为准。
+See [OPENMV_CUTS.md](ports/raspberrypi/OPENMV_CUTS.md) for a detailed comparison. That document and interim
+status files include historical snapshots; the port source, configuration, and this README define the current
+feature selection.
 
-## 当前保留的运行能力
+## Currently Retained Runtime Capabilities
 
-- **语言与交互**：标准 MicroPython VM/GC、编译器、raw/friendly REPL、Ctrl-C、软复位、
-  scheduler、JSON、select、浮点与整数计算，以及配置启用的 f-string/t-string。
-- **存储**：通过 Circle SDHOST/EMMC 接入 FAT/VFS，启动卡挂载为 `/`，读取 `boot.py` 和
-  `main.py`；不将同一启动卡再次暴露为独立 `machine.SDCard` 挂载设备。
-- **网络**：USB LAN9512 Ethernet、IPv4/DHCP/静态配置、UDP/TCP、DNS A、超时/poll、
-  端点查询与部分 socket options；通过标准 `tls`/`ssl` 接入 mbedTLS、标准 requests。
-- **板级接口**：Pin、延迟到 VM 的 Pin IRQ、硬件 I2C/SPI、SoftI2C/SoftSPI、Timer、WDT、
-  软件 RTC/time 和内存/板信息诊断。UART0 用作 REPL，通用 UART/PWM 类尚未启用。
-- **ML**：冻结 `ml` 包、原生 `uml.Model`、ulab；支持模型文件或 bytes、ndarray/可调用输入、
-  postprocess callback、量化输入转换及输出反量化。当前 VC4 只加速符合条件的 FP32 FC，
-  量化算子与其他算子走相应 CPU 实现。
-- **文件媒体**：原生 `image` 支持 PNG、未压缩 BMP、PNM 的解码、像素、裁剪/缩放/灰度、
-  有限绘制与 ndarray 转换；原生 `audio` 支持 WAV PCM16/raw PCM 文件和 VM 回调。
-  JPEG、完整 OpenMV image API、摄像头、实时麦克风采集尚未接入。
+- **Language and interaction**: standard MicroPython VM/GC, compiler, raw/friendly REPL, Ctrl-C, soft reset,
+  scheduler, JSON, select, floating-point and integer computation, and f-strings/t-strings enabled by configuration.
+- **Storage**: FAT/VFS through Circle SDHOST/EMMC, with the boot card mounted at `/` and `boot.py` and
+  `main.py` loaded from it. The same boot card is not exposed again as a separate `machine.SDCard` mount device.
+- **Networking**: USB LAN9512 Ethernet, IPv4/DHCP/static configuration, UDP/TCP, DNS A, timeouts/poll,
+  endpoint queries, and some socket options; mbedTLS through standard `tls`/`ssl`, and standard requests.
+- **Board interfaces**: Pin, Pin IRQs deferred to the VM, hardware I2C/SPI, SoftI2C/SoftSPI, Timer, WDT,
+  software RTC/time, and memory/board diagnostics. UART0 serves the REPL; general-purpose UART/PWM classes
+  are not yet enabled.
+- **ML**: frozen `ml` package, native `uml.Model`, and ulab; supports model files or bytes, ndarray/callable
+  inputs, postprocess callbacks, quantized input conversion, and output dequantization. VC4 currently
+  accelerates only eligible FP32 FC operations; quantized and other operators use their corresponding CPU implementations.
+- **File media**: native `image` supports decoding PNG, uncompressed BMP, and PNM, pixel access,
+  cropping/resizing/grayscale, limited drawing, and ndarray conversion. Native `audio` supports WAV PCM16/raw
+  PCM files and VM callbacks. JPEG, the full OpenMV image API, cameras, and live microphone capture are not yet integrated.
 
-这些是当前代码接入范围，不等于每个 API 都已有完整实板覆盖。IPv6、完整 POSIX/CPython
-socket 兼容、线程、native emitter 等不在当前已启用范围。
+These describe the scope currently integrated in the code; they do not mean that every API has complete
+hardware test coverage. IPv6, full POSIX/CPython socket compatibility, threads, and native emitters are among
+the features not currently enabled.
 
-## RPI1B 与 VC4 特化
+## RPI1B and VC4 Specialization
 
-### 板级与运行时
+### Board and Runtime
 
-- 首个板型为 Pi 1 Model B R2 / 512 MiB，BCM2835、ARM1176JZF-S、AArch32、VFPv2
-  hard-float；基准配置固定 **ARM 700 MHz / CORE 250 MHz**。
-- [RPI1B 板级入口](ports/raspberrypi/boards/RPI1B/README.md) 选择板配置，再进入公共端口
-  构建；后续板型各自提供选择文件和入口，而不是在公共 Makefile 中不断添加硬编码分支。
-- Circle 拥有启动、MMU、IRQ、平台堆与调度；GC 从已测量可用的低内存区分配，保留
-  32 MiB 给 Circle 网络/USB/SD 工作，要求至少 16 MiB GC 空间。
-- ARM 端口的 NLR/GC 寄存器保存覆盖 VFP callee-saved 寄存器；Python 回调放在 VM
-  上下文，不在硬件 IRQ 内执行。
+- The first board is the Pi 1 Model B R2 / 512 MiB, with BCM2835, ARM1176JZF-S, AArch32, and VFPv2
+  hard-float. The baseline configuration is fixed at **ARM 700 MHz / CORE 250 MHz**.
+- The [RPI1B board entry point](ports/raspberrypi/boards/RPI1B/README.md) selects the board configuration
+  before entering the shared port build. Future boards provide their own selection files and entry points,
+  rather than adding more hardcoded branches to the shared Makefile.
+- Circle owns startup, the MMU, IRQs, the platform heap, and scheduling. GC allocates from the measured
+  available low-memory region, reserving 32 MiB for Circle networking/USB/SD work and requiring at least 16 MiB for GC.
+- The ARM port's NLR/GC register save covers VFP callee-saved registers. Python callbacks run in the VM
+  context, not in hardware IRQ handlers.
 
-### 推理与权重布局
+### Inference and Weight Layout
 
-- TFLM 保持标准 `Register_FULLY_CONNECTED()`；`CO_PROCESSOR=vc4` 替换同名 FC 源码。
-  不双链接两份完整 TFLM archive，也不改变模型 schema。
-- Prepare 分配并上传常驻 GPU 权重，原始模型仍为 row-major，供 CPU fallback 使用。
-- **multi-tile** 使每 QPU 循环处理多个 16 行 tile，1024x2048 / 12 QPU 从 6 次提交降为
-  1 次，workspace 从 103056 降为 13296 bytes，uniform 从 98496 降为 384 bytes。
-  单独这一改动的性能改善有限，主要瓶颈仍是权重访存。
-- **packed16** 将 GPU 权重改为 `[tile][k][lane]`，使同一 k 的 16 个 lane 读取连续
-  64 bytes，减少 TMU/cache 等待；不改变权重字节数，不修改源模型。
-- CPU float fallback 在 ARM VFP hard-float 下使用四累加器；bias 与 fused activation
-  在 ARM 处理。Prepare 失败可回退，提交后的 timeout/I/O 错误不静默重跑 CPU。
-- timeout 时保留可能仍被 QPU 使用的资源，后续确认完成后再回收 deferred-free。
+- TFLM retains the standard `Register_FULLY_CONNECTED()`; `CO_PROCESSOR=vc4` replaces the FC source file
+  with the same name. It does not link two complete TFLM archives or change the model schema.
+- Prepare allocates and uploads resident GPU weights. The original model remains row-major for CPU fallback.
+- **multi-tile** lets each QPU loop over multiple 16-row tiles. For 1024x2048 / 12 QPUs, submissions drop
+  from 6 to 1, workspace from 103056 to 13296 bytes, and uniforms from 98496 to 384 bytes. This change alone
+  yields limited performance improvement; weight memory access remains the main bottleneck.
+- **packed16** changes the GPU weight layout to `[tile][k][lane]`, so the 16 lanes for the same k read
+  64 contiguous bytes, reducing TMU/cache waits. It does not change the number of weight bytes or modify the source model.
+- CPU float fallback uses four accumulators with ARM VFP hard-float; bias and fused activation are handled
+  on ARM. Prepare failures can fall back; timeout/I/O errors after submission do not silently rerun on the CPU.
+- On timeout, resources that may still be in use by the QPU are retained and reclaimed through deferred-free
+  once completion is confirmed.
 
-当前生产配置为：
+The current production configuration is:
 
 ```text
 VC4_ENABLE=1
@@ -146,26 +163,29 @@ VC4_POLL_STRIDE=256
 VC4_WAIT_SLEEP_US=10
 ```
 
-完整算法、ABI、演进、计数器及 TFLM 生命周期说明见 [VC4 runtime README](lib/vc4-runtime/README.md)。
+See the [VC4 runtime README](lib/vc4-runtime/README.md) for the full algorithm, ABI, development history,
+counters, and TFLM lifecycle description.
 
-### 日志与构建一致性
+### Logging and Build Consistency
 
 ```python
 import machine
-machine.logs()                       # 默认保留快照，可重复查看
-machine.logs(clear=True)             # 显式消费当前日志
-machine.vc4_reset_diagnostics()      # 下一次推理前重开诊断采样
+machine.logs()                       # Retain the snapshot by default; it can be read repeatedly
+machine.logs(clear=True)             # Explicitly consume the current logs
+machine.vc4_reset_diagnostics()      # Restart diagnostic sampling before the next inference
 ```
 
-日志环分配 16 KiB，最多保留 16383 bytes，写满覆盖最旧内容。VC4 每个诊断会话仅采样
-前 8 次 dispatch；读取日志不会触发新采样。日志快照和诊断重采样是不同机制。
+The log ring allocates 16 KiB and retains up to 16383 bytes, overwriting the oldest content when full.
+VC4 samples only the first 8 dispatches in each diagnostic session; reading logs does not trigger new
+sampling. Log snapshots and restarting diagnostic sampling are separate mechanisms.
 
-Windows 构建会统一 MSYS/native GCC 的 `BUILD` 路径表达，显式依赖生成的 QSTR 头，
-并在生成镜像时校验最终 ELF 的字符串池、冻结引用范围和内存布局。该检查是通用一致性
-校验，不硬编码某个 Python 包的预期导入名。build ID 用于辨识源码/配置，镜像 SHA-256
-用于辨识二进制；二者不互相代替，也不代表实板验收。
+Windows builds normalize `BUILD` path representations between MSYS/native GCC, explicitly depend on generated
+QSTR headers, and check the final ELF's string pool, frozen reference ranges, and memory layout when generating
+the image. This is a general consistency check; it does not hardcode the expected import name of any Python
+package. The build ID identifies source/configuration, while the image SHA-256 identifies the binary.
+Neither substitutes for the other, and neither constitutes hardware acceptance.
 
-## 公共 ML API
+## Public ML API
 
 ```python
 import ml
@@ -173,7 +193,7 @@ from ulab import numpy as np
 
 model = ml.Model('/model.tflite', backend='auto', arena_size=2 * 1024 * 1024)
 try:
-    # 以下形状仅为示例，实际应匹配 model.input_shape / input_dtype。
+    # This shape is only an example; match model.input_shape / input_dtype in actual use.
     x = np.array([0.0], dtype=np.float).reshape((1, 1))
     outputs = model.predict([x])
     print(outputs)
@@ -181,153 +201,208 @@ finally:
     model.deinit()
 ```
 
-`backend` 可为 `auto`、`reference`、`vc4`。`auto` 保留当前平台开关，`reference` 使用
-CPU 路径，`vc4` 允许 VC4 尝试；指定 `vc4` 不保证每个算子都上 GPU。应结合实际
-eligibility、完成日志及 CPU/VC4 对照验证。模型形状、数据类型和 arena 大小由应用确定。
+`backend` accepts `auto`, `reference`, or `vc4`. `auto` preserves the current platform switches,
+`reference` uses the CPU path, and `vc4` allows VC4 to be attempted. Selecting `vc4` does not guarantee
+that every operator runs on the GPU. Verify actual eligibility, completion logs, and CPU/VC4 comparisons.
+The application determines model shapes, data types, and arena size.
 
-## 依赖与固定提交
+## Dependencies and Pinned Commits
 
-[.gitmodules](.gitmodules) 保留 OpenMV 的子模块路径组织；下面的提交是主仓库 gitlink，
-不是跟随远程分支的浮动版本。
+[.gitmodules](.gitmodules) retains OpenMV's submodule path organization. The commits below are gitlinks
+in the main repository, not floating versions that follow remote branches.
 
-| 路径 | 仓库 | 固定提交 |
+| Path | Repository | Pinned commit |
 | --- | --- | --- |
 | `lib/micropython` | [micropython](https://github.com/micropython/micropython) | `0fd6c573ea815774668bbb16b8e197c8822368b2` |
 | `lib/tinyusb` | [tinyusb](https://github.com/hathach/tinyusb) | `aa0fc2e08f1c2dd6f026a431e8989357fbb4c5bf` |
 | `modules/ulab` | [micropython-ulab](https://github.com/v923z/micropython-ulab) | `d161443327173bcf94c2616cb5de37e290af71ca` |
 | `lib/tflm/libtflm` | [libtflm-mpynn](https://gitee.com/wth_iw0/libtflm-mpynn) | `9008e63d0acb5a3c739a46af85636e837c6835b2` |
-| `lib/vc4-runtime` | [vc4-runtime](https://gitee.com/wth_iw0/vc4-runtime) | `92faccf96be7edb65ddfe2138192e0ac2d6f793f` |
+| `lib/vc4-runtime` | [vc4-runtime](https://github.com/iw0-wth/vc4-runtime) | `284d73c2876fc53f53009b1e14bd1f4306419f06` |
 | `lib/circle` | [circle](https://gitee.com/wth_iw0/circle) | `7a81e1b480fe7d19fc1fc695b89bff0a0848f44b` |
 | `lib/apriltag` | [OpenMV apriltag](https://github.com/openmv/apriltag) | `636b9ba14ba8485c9fc09590cd4ef53f11427966` |
 | `tools/alif` | [alif-security-toolkit](https://github.com/micropython/alif-security-toolkit) | `63698efe8567eed115fe620d5e5de75f460310d7` |
 | `scripts/libraries/microdot` | [microdot](https://github.com/miguelgrinberg/microdot) | `b241dfce270883e5018f0b8ec8f5821ea4fe156e` |
 
-最后三项沿用 OpenMV，当前 RPI1B 不依赖它们。tinyusb 指针也保留在工程中；当前
-RPI1B 的 USB host/LAN9512 由 Circle 实现，并非自动使用 TinyUSB。
-MicroPython 内部为开发复制的嵌套库不在本轮统一重置；本地状态说明见
-[LOCAL_REPOSITORY.md](docs/LOCAL_REPOSITORY.md)。
+The last three entries are inherited from OpenMV and are not dependencies of the current RPI1B port.
+The tinyusb pointer is also retained in the project; Circle implements the current RPI1B USB host/LAN9512
+support, so TinyUSB is not automatically used. Nested libraries copied inside MicroPython for development
+have not been uniformly reset in this round. See [LOCAL_REPOSITORY.md](docs/LOCAL_REPOSITORY.md) for the
+local state description.
 
-## 构建 RPI1B
+### Using Gitee Mirrors When Connectivity Is Poor
 
-从 mpynn 根目录初始化所需的一级子模块：
+If GitHub connectivity is unreliable, the main project is available from the [Gitee mirror](https://gitee.com/wth_iw0/mpynn).
+Available dependency mirrors are listed below. You must still check out **the same full commit listed in the
+table**; mirrors may lag behind, so do not simply switch to a mirror's default branch or another version.
+If a mirror does not yet contain the specified commit, wait for synchronization or use GitHub.
+
+| Dependency | Gitee mirror |
+| --- | --- |
+| MicroPython | https://gitee.com/wth_iw0/micropython |
+| ulab | https://gitee.com/wth_iw0/micropython-ulab |
+| TinyUSB | https://gitee.com/wth_iw0/tinyusb |
+| VC4 runtime | https://gitee.com/wth_iw0/vc4-runtime |
+| TFLM-VC4 external source | https://gitee.com/wth_iw0/tflite-micro-vc4 |
+
+There is no need to modify and commit `.gitmodules` for local network conditions. Set local Git configuration
+from the mpynn root directory:
+
+```sh
+git submodule init
+git config submodule.src/micropython.url https://gitee.com/wth_iw0/micropython
+git config submodule.src/omv/modules/ulab.url https://gitee.com/wth_iw0/micropython-ulab
+git config submodule.src/lib/tinyusb.url https://gitee.com/wth_iw0/tinyusb
+git config submodule.lib/vc4-runtime.url https://gitee.com/wth_iw0/vc4-runtime
+git submodule update --init lib/micropython modules/ulab lib/tinyusb lib/vc4-runtime
+```
+
+`git submodule sync` restores the URLs from `.gitmodules`; set local overrides after sync when mirrors are
+needed. The external TFLM-VC4 repository can likewise be cloned from Gitee into `tflite-micro`, followed by
+checking out the pinned commit. `libtflm-mpynn` and Circle continue to use the Gitee URLs in the dependency
+table, with their commits unchanged.
+
+## Building RPI1B
+
+Initialize the required first-level submodules from the mpynn root directory:
 
 ```sh
 git submodule update --init lib/micropython lib/tinyusb modules/ulab \
   lib/tflm/libtflm lib/vc4-runtime lib/circle
 ```
 
-需要 GNU Make、Python 3、匹配的 ARM bare-metal 工具链，以及 manifest 所需的
-micropython-lib/mbedTLS 等嵌套依赖。现有开发工作区已经准备它们；新克隆时需按标准
-MicroPython 的依赖设置补齐，不要把一级子模块初始化等同于所有嵌套依赖已就绪。
+GNU Make, Python 3, a matching ARM bare-metal toolchain, and nested dependencies such as micropython-lib/mbedTLS
+required by the manifests are needed. These are already prepared in the existing development workspace.
+For a fresh clone, complete the standard MicroPython dependency setup; initializing first-level submodules
+does not mean that all nested dependencies are ready.
 
-ARM TFLM-VC4 实现与构建仓库：[wth_iw0/tflite-micro-vc4](https://gitee.com/wth_iw0/tflite-micro-vc4)。
-它与 `lib/tflm/libtflm` 的头文件/库资产仓库、`lib/vc4-runtime` 的硬件运行库职责不同。
+ARM TFLM-VC4 implementation and build repository: [iw0-wth/tflite-micro-vc4](https://github.com/iw0-wth/tflite-micro-vc4).
+The source baseline used by this project is pinned to [`7cfd402ebb0cafa95021bc893ddcd74d4ef7f952`](https://github.com/iw0-wth/tflite-micro-vc4/commit/7cfd402ebb0cafa95021bc893ddcd74d4ef7f952).
+Its role differs from `lib/tflm/libtflm`, which holds headers/library assets, and `lib/vc4-runtime`, which
+provides the hardware runtime.
 
-**当前 Pi Makefile 默认链接工作区同级 `../tflite-micro` 中单独构建的 ARM TFLM-VC4
-archive。** 新工作区可从上述仓库获取源码并将本地目录命名为 `tflite-micro`，与 mpynn
-并列。`lib/tflm/libtflm` 中的 CPU reference archive 不能被当成 VC4-specialized archive。
-首次构建前应准备兼容版本的源码/overlay，使用 `TARGET=rpi1b CO_PROCESSOR=vc4` 构建，
-或通过 `TFLM_LIB` 指定现成兼容 ARM TFLM-VC4 archive 的绝对路径。该外部源码仓库当前
-不属于主仓库的一级子模块；构建时需另行记录其版本，不将远程默认分支当作固定版本。
-细节见 [TFLM-VC4 集成](lib/vc4-runtime/integrations/tflm/README.md)。
+**The current Pi Makefile links by default to an ARM TFLM-VC4 archive built separately in the sibling
+workspace directory `../tflite-micro`.** In a new workspace, obtain the source from the repository above and
+name its local directory `tflite-micro`, alongside mpynn. The CPU reference archive in `lib/tflm/libtflm`
+cannot be treated as a VC4-specialized archive. Before the first build, prepare compatible source/overlays
+and build with `TARGET=rpi1b CO_PROCESSOR=vc4`, or set `TFLM_LIB` to the absolute path of an existing compatible
+ARM TFLM-VC4 archive. This external source repository is not currently a first-level submodule of the main
+repository. Explicitly check out the pinned commit above; do not treat the remote default branch as a fixed version:
 
-本工作区 Windows/MSYS2 示例：
+```sh
+# Run from the workspace root, with mpynn and tflite-micro as sibling directories.
+git clone https://github.com/iw0-wth/tflite-micro-vc4.git tflite-micro
+git -C tflite-micro checkout --detach 7cfd402ebb0cafa95021bc893ddcd74d4ef7f952
+```
+
+See [TFLM-VC4 integration](lib/vc4-runtime/integrations/tflm/README.md) for details.
+
+Windows/MSYS2 example for this workspace:
 
 ```sh
 export PATH=/e/arm-none-eabi/bin:/usr/bin:$PATH
 cd /d/openmv_aicore/mpynn
 make -C ports/raspberrypi/boards/RPI1B -j8 PYTHON=D:/anaconda3/python.exe
 
-# 顶层兼容入口，同样经过板级选择：
+# Compatible top-level entry point; also goes through board selection:
 make TARGET=RPI1B -j8 PYTHON=D:/anaconda3/python.exe
 ```
 
-可追加 `TFLM_LIB=<ARM-VC4-archive绝对路径>`。POSIX 环境使用匹配的 `arm-none-eabi-`
-工具链与本机 Python 3。默认输出在 `build/RPI1B/bin/`，包括镜像、ELF、map 与布局报告；
-对象、Circle 构建 stage 和工具产物也在 `build/` 中，不修改既有上游源码。
+You can append `TFLM_LIB=<absolute-path-to-ARM-VC4-archive>`. On POSIX, use a matching `arm-none-eabi-`
+toolchain and the local Python 3. Output defaults to `build/RPI1B/bin/`, including the image, ELF, map,
+and layout report. Objects, Circle build stages, and tool outputs also stay under `build/`, without
+modifying existing upstream source code.
 
-默认 `make` 或 `make ... kernel` 只产出内核。需要完整 SD 镜像时选择：
+By default, `make` or `make ... kernel` produces only the kernel. To create a complete SD image, use:
 
 ```sh
 make -C ports/raspberrypi/boards/RPI1B sd-image -j8 \
   PYTHON=D:/anaconda3/python.exe SD_BOOT_DIR=/d/openmv_aicore/RPI1B-SD/boot
 ```
 
-`sd-image` 先构建当前内核，再将本地启动文件、当前板配置和内核打包为
-`build/RPI1B/bin/mpynn-RPI1B-sd.img`。默认仅一个128 MiB FAT16分区，1 MiB对齐，
-镜像总长129 MiB；刷到更大的卡后其余空间不分配、不自动扩容。分区大小可用
-`SD_PARTITION_MIB` 修改；`SD_INCLUDE_DEMO=1` 将分类后的演示和配套模型复制到分区内
-`/demo`，自定义文件用 `SD_EXTRA_DIR` 显式加入。默认不插入demo或启动脚本；启用demo也
-只复制文件，不自动运行或冻结进内核。
+`sd-image` first builds the current kernel, then packages local boot files, the current board configuration,
+and the kernel into `build/RPI1B/bin/mpynn-RPI1B-sd.img`. By default, it contains a single 128 MiB FAT16
+partition aligned to 1 MiB, for a total image size of 129 MiB. After flashing to a larger card, the remaining
+space stays unallocated and is not automatically expanded. Change the partition size with `SD_PARTITION_MIB`.
+`SD_INCLUDE_DEMO=1` copies the categorized demos and their models into `/demo` on the partition; explicitly
+add custom files with `SD_EXTRA_DIR`. No demos or startup scripts are inserted by default. Enabling demos
+only copies files; it does not run them automatically or freeze them into the kernel.
 
-将生成的镜像与板级启动配置、匹配的 Raspberry Pi boot firmware 配合使用。构建过程
-不格式化或写入物理 SD 卡。UART0 为 115200 8N1。详细步骤与新板型接入见
-[RPI1B 构建说明](ports/raspberrypi/boards/RPI1B/README.md)。
+Use the generated image with the board's boot configuration and matching Raspberry Pi boot firmware.
+The build does not format or write to a physical SD card. UART0 uses 115200 8N1. See the
+[RPI1B build instructions](ports/raspberrypi/boards/RPI1B/README.md) for detailed steps and adding new boards.
 
-## 测试与演示布局
+## Test and Demo Layout
 
-开发测试位于工作区同级 `../tests/`，不再作为 mpynn 源仓库的内部目录。RPI 端口中的
-smoke、验收、benchmark 和测试模型生成器已归入 `../tests/raspberrypi/`；端口仅保留
-manifest、构建、镜像/QSTR 校验及其必要工具。编译期配置约束保留在端口内，因此普通
-固件构建不要求外部测试目录存在。
+Development tests live in the sibling workspace directory `../tests/`, rather than inside the mpynn source
+repository. The RPI port's smoke tests, acceptance tests, benchmarks, and test-model generators have moved to
+`../tests/raspberrypi/`. The port retains only manifests, build tools, image/QSTR checks, and their required
+utilities. Compile-time configuration constraints remain in the port, so normal firmware builds do not
+require the external test directory to exist.
 
-用户可直接运行的操作示例集中在 [demo](demo/README.md)，按 `system/`（系统）、
-`network/`（网络）、`ai/`（模型应用）分类，不导入测试树或开发夹具。
-[textcls](demo/ai/textcls/README.md) 配齐英文文本分类模型、词表和11类标签，可通过
-`from demo.ai import textcls; textcls.run()` 运行或输入自己的文本；其原始评分不是概率。
-测试脚本负责断言、golden 对拍和故障路径；demo 负责明确传参、展示使用方式及释放资源。
-其中 [VC4 加速评分器](demo/ai/vc4_acceleration/README.md) 随附模型和输入，可通过
-`from demo.ai import vc4_acceleration; vc4_acceleration.run()` 直接展示同模型 CPU/VC4
-评分、平均耗时、加速比和本次 GPU dispatch 证据，无需自行生成测试夹具。
-独立 `vc4-runtime` 子模块自身的测试由该项目管理，不在本次主项目测试迁移范围内。
+User-facing operational examples are collected in [demo](demo/README.md), organized under `system/`
+(system), `network/` (networking), and `ai/` (model applications). They do not import the test tree or
+development fixtures. [textcls](demo/ai/textcls/README.md) includes an English text classification model,
+vocabulary, and 11 class labels. Run it with `from demo.ai import textcls; textcls.run()` or supply your own
+text; its raw scores are not probabilities. Test scripts handle assertions, golden comparisons, and failure
+paths; demos show explicit arguments, usage, and resource cleanup. The [VC4 acceleration scorer](demo/ai/vc4_acceleration/README.md)
+includes its model and input. Run `from demo.ai import vc4_acceleration; vc4_acceleration.run()` to display
+CPU/VC4 scores for the same model, average timings, speedup, and GPU dispatch evidence from the current run,
+without generating your own test fixtures. Tests belonging to the independent `vc4-runtime` submodule are
+managed by that project and are outside the scope of this main-project test migration.
 
-## 验证现状与范围
+## Validation Status and Scope
 
-- Pi1B 已有基础 REPL、SD 读写、基础 TCP echo 及 VC4 FP32 FC 的实板记录。
-- 已报告的 1024x2048 稠密 FC 测试覆盖原输入/取反输入、所有输出、布局/计数器和模型
-  释放后重建。700/250 下 CPU 约 64.07 ms、packed16 约 9.77 ms，约 **6.56x**；
-  GPU 最大误差约 `1.33514408e-05`，通过固定绝对/相对容差。
-- 上述性能属于当时对应 build ID 的固件。独立 runtime 提取、日志默认快照等后续修改
-  已通过 host/ARM 静态验证，不能自动继承旧二进制的实板认证。
-- host 测试覆盖真实 MicroPython 原生 ML、TFLM float/int8、文件媒体、张量所有权、平台
-  callbacks、packed/uniform 布局、错误回退和资源回收；它们不模拟 QPU 算术。
-- 多数外设、电气行为、完整网络/TLS 场景、真实 timeout/deferred-free 故障注入与热稳定性
-  仍需逐项实板验收。单个模型的加速比也不能推广到所有网络。
+- Pi1B has hardware test records for basic REPL, SD reads/writes, basic TCP echo, and VC4 FP32 FC.
+- The reported 1024x2048 dense FC test covers the original/negated input, all outputs, layouts/counters,
+  and model reconstruction after deinitialization. At 700/250, CPU time was about 64.07 ms and packed16
+  about 9.77 ms, or approximately **6.56x** speedup. The maximum GPU error was about `1.33514408e-05`,
+  passing fixed absolute/relative tolerances.
+- Those performance figures belong to the firmware with the corresponding build ID at that time.
+  Subsequent changes, including extracting the independent runtime and making log snapshots the default,
+  have passed host/ARM static validation; they do not automatically inherit the older binary's hardware validation.
+- Host tests cover real MicroPython native ML, TFLM float/int8, file media, tensor ownership, platform
+  callbacks, packed/uniform layouts, error fallback, and resource reclamation. They do not simulate QPU arithmetic.
+- Most peripherals, electrical behavior, full networking/TLS scenarios, real timeout/deferred-free fault
+  injection, and thermal stability still require hardware acceptance testing individually. A speedup for
+  one model cannot be generalized to all networks.
 
-历史状态文档可能包含旧默认值、旧哈希和阶段性未完成项，应结合源码及记录的 build ID
-阅读。不要从旧 OpenMV README 或保留的目录推断支持范围。
+Historical status documents may contain old defaults, old hashes, and items unfinished at the time.
+Read them alongside the source and recorded build IDs. Do not infer support from the old OpenMV README
+or from retained directories.
 
-## 目录与进一步阅读
+## Directory Guide and Further Reading
 
-| 目录/文档 | 用途 |
+| Directory/document | Purpose |
 | --- | --- |
-| [ports/raspberrypi](ports/raspberrypi/README.md) | 当前裸机端口、Circle 适配、网络/机器接口 |
-| [ports/raspberrypi/boards/RPI1B](ports/raspberrypi/boards/RPI1B/README.md) | 1B 板级入口和配置选择 |
-| [boards/RPI1B](boards/RPI1B/board_config.mk) | 当前板架构、功能配置和启动时钟的唯一来源 |
-| [ports/windows](ports/windows/README.md) | Windows 原生 ML 验证端口 |
-| [lib/vc4-runtime](lib/vc4-runtime/README.md) | 自有独立 runtime 与 TFLM-VC4 技术文档 |
-| [scripts/libraries/ml](scripts/libraries/ml/ml-core/ml/model.py) | 公共 ML Python facade 与工具 |
-| [modules/image_file](modules/image_file/image_file.mk) / [modules/audio](modules/audio/audio_file.c) | 独立文件图像/音频原生模块 |
-| [demo](demo/README.md) | 用户演示与板端操作入口；历史镜像信息需核对 |
-| [../tests](../tests/README.md)（与 mpynn 同级） | 独立开发测试树，含 host/ARM/板级验收与测试模型生成器 |
-| [docs/LOCAL_REPOSITORY.md](docs/LOCAL_REPOSITORY.md) | 本地基线、submodule 指针与开发副本说明 |
+| [ports/raspberrypi](ports/raspberrypi/README.md) | Current bare-metal port, Circle adaptation, networking/machine interfaces |
+| [ports/raspberrypi/boards/RPI1B](ports/raspberrypi/boards/RPI1B/README.md) | 1B board entry point and configuration selection |
+| [boards/RPI1B](boards/RPI1B/board_config.mk) | Single source for the current board architecture, feature configuration, and boot clocks |
+| [ports/windows](ports/windows/README.md) | Windows native ML validation port |
+| [lib/vc4-runtime](lib/vc4-runtime/README.md) | Project-owned independent runtime and TFLM-VC4 technical documentation |
+| [scripts/libraries/ml](scripts/libraries/ml/ml-core/ml/model.py) | Public ML Python facade and utilities |
+| [modules/image_file](modules/image_file/image_file.mk) / [modules/audio](modules/audio/audio_file.c) | Independent native file-image/audio modules |
+| [demo](demo/README.md) | User demos and board-side entry points; historical image information requires checking |
+| [../tests](../tests/README.md) (alongside mpynn) | Independent development test tree, including host/ARM/board acceptance tests and test-model generators |
+| [docs/LOCAL_REPOSITORY.md](docs/LOCAL_REPOSITORY.md) | Local baseline, submodule pointers, and development-copy notes |
 
-## 许可证与端口边界
+## Licenses and Port Boundaries
 
-**RPI/Circle 端口按 Circle 的 GPLv3 许可要求分发。** 当前
-[raspberrypi 端口](ports/raspberrypi/README.md) 依赖并链接 Circle，包含其平台适配代码的
-树莓派固件应遵守 GPLv3；各源文件原有的版权声明与许可通知仍须保留。
+**The RPI/Circle port is distributed under Circle's GPLv3 requirements.** The current
+[raspberrypi port](ports/raspberrypi/README.md) depends on and links Circle. Raspberry Pi firmware containing
+its platform adaptation code must comply with GPLv3; existing copyright statements and license notices in
+each source file must still be retained.
 
-该端口的许可边界不意味着整个 mpynn 仓库统一改为 GPLv3：
+This port's licensing boundary does not mean that the entire mpynn repository has been relicensed under GPLv3:
 
-| 范围 | 许可说明 |
+| Scope | Licensing notes |
 | --- | --- |
-| RPI/Circle 端口及链接 Circle 的固件 | 遵守 Circle 的 GPLv3 要求，包括留在端口内的 VC4 Circle 平台适配器 |
-| 独立 `vc4-runtime` | 保持其自身许可；独立 runtime 核心采用 MIT，不因被 RPI 端口使用而统一改为 GPLv3 |
-| `tflite-micro-vc4` / TFLM 算子接入 | 保持 TFLM 相关源码的 Apache-2.0 等原有许可，不依赖 Circle |
-| 其他端口 | 按各自源码及实际链接依赖的许可分发，不继承 RPI/Circle 端口的 GPLv3 |
-| OpenMV 保留代码和其他第三方组件 | 保留各自的版权、许可及使用条件，不因本项目名称或端口划分而重新许可 |
+| RPI/Circle port and firmware linking Circle | Must comply with Circle's GPLv3 requirements, including the VC4 Circle platform adapter that remains inside the port |
+| Independent `vc4-runtime` | Retains its own license; the independent runtime core uses MIT and is not uniformly relicensed under GPLv3 because the RPI port uses it |
+| `tflite-micro-vc4` / TFLM operator integration | Retains the original licenses of the relevant TFLM source, including Apache-2.0; does not depend on Circle |
+| Other ports | Distributed according to their own source licenses and the licenses of dependencies actually linked; do not inherit the RPI/Circle port's GPLv3 |
+| Retained OpenMV code and other third-party components | Retain their respective copyright, licenses, and conditions of use; are not relicensed by the project name or port organization |
 
-独立 VC4 组件可以在其他项目中通过非 Circle 平台后端使用；其独立许可不免除将它们
-链接进 Circle 固件时对该固件适用的 GPLv3 要求。具体文件以所属组件的许可证和源码
-声明为准，本节说明组件与端口边界，不覆盖或移除原有许可条件。
+The independent VC4 components can be used in other projects through non-Circle platform backends. Their
+independent licenses do not remove the GPLv3 requirements applicable to firmware that links them into Circle.
+For individual files, the owning component's license and source declarations apply. This section explains
+component and port boundaries; it does not override or remove existing license conditions.
