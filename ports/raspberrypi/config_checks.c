@@ -15,6 +15,7 @@ _Static_assert(MICROPY_PY_FSTRINGS == 1, "f-strings must be enabled");
 _Static_assert(MICROPY_PY_TSTRINGS == 1, "template strings must be enabled");
 _Static_assert(MICROPY_MODULE_BUILTIN_SUBPACKAGES == 1, "string.templatelib requires subpackages");
 _Static_assert(MICROPY_ENABLE_GC == 1, "GC required");
+_Static_assert(MICROPY_ENABLE_DOC_STRING == 1, "module doc strings required for REPL/demo help");
 _Static_assert(MICROPY_ENABLE_SCHEDULER == 1, "scheduler required");
 _Static_assert(MICROPY_NLR_SETJMP == 1, "use the VFP-safe private NLR context");
 _Static_assert(MICROPY_GCREGS_SETJMP == 1, "GC must capture the private context");

@@ -31,8 +31,12 @@ $(BUILD_ID_HEADER): FORCE build_identity.py $(BOARD_DIR)/board_config.h Makefile
 	$(Q)$(PYTHON) -B build_identity.py --port . --board "$(BOARD_DIR)" --header "$@" --report "$(BUILD_ID_REPORT)" $(foreach f,$(BUILD_ID_FLAGS),--flag="$(f)")
 CFLAGS += -I$(BUILD)
 # Keep mpy-cross build output outside the read-only MicroPython checkout.
-MPY_CROSS_BUILD := $(MPYNN_TOP)/build/$(BOARD)/mpy-cross
+# Doc-string-aware compiler also preserves docs in frozen Python modules.
+# Keep it separate from older mpy-cross objects built with doc strings disabled.
+MPY_CROSS_BUILD := $(MPYNN_TOP)/build/$(BOARD)/mpy-cross-docstrings-v1
+MPY_CROSS_CONFIG := $(abspath tools/mpy_cross_config.h)
 ifeq ($(OS),Windows_NT)
+MPY_CROSS_CONFIG := $(shell cygpath -m "$(MPY_CROSS_CONFIG)")
 MICROPY_MPYCROSS := $(MPY_CROSS_BUILD)/mpy-cross.exe
 else
 MICROPY_MPYCROSS := $(MPY_CROSS_BUILD)/mpy-cross
@@ -43,7 +47,7 @@ $(BUILD)/frozen_content.c: | $(MICROPY_MPYCROSS)
 export MICROPY_MPYCROSS
 export PYTHONDONTWRITEBYTECODE := 1
 $(MICROPY_MPYCROSS): FORCE
-	$(Q)$(MAKE) -C "$(TOP)/mpy-cross" BUILD="$(abspath $(MPY_CROSS_BUILD))" PYTHON="$(PYTHON)" CROSS_COMPILE= USER_C_MODULES= FROZEN_MANIFEST=
+	$(Q)$(MAKE) -C "$(TOP)/mpy-cross" BUILD="$(abspath $(MPY_CROSS_BUILD))" PYTHON="$(PYTHON)" CROSS_COMPILE= USER_C_MODULES= FROZEN_MANIFEST= CFLAGS_EXTRA='-DMP_CONFIGFILE=\"$(MPY_CROSS_CONFIG)\"'
 MICROPY_ROM_TEXT_COMPRESSION := 0
 MICROPY_VFS_FAT := 1
 MICROPY_PY_SSL := 1
