@@ -8,3 +8,6 @@
 *.der binary
 *.bin binary
 *.bin.sign binary
+
+# Preserve the pinned reference asset byte-for-byte, including CRLF.
+demo/ai/vc4_acceleration/reference.json -text whitespace=cr-at-eol
