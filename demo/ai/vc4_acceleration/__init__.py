@@ -50,38 +50,38 @@ def _error(output, expected):
 def _mode(path, ref, backend, warmup, repeat, arena_size):
     import gc
     import time
+    import machine
     from ml import Model
     from ulab import numpy as np
     model = None
+    previous = machine.vc4()
     try:
-        # Backend selection covers Prepare and Invoke in the public facade.
-        model = Model(path, backend=backend, arena_size=arena_size)
+        # Match vc4_dense_acceptance.py: select once before Prepare, then keep
+        # auto mode for the entire group instead of toggling on every predict.
+        machine.vc4(backend == 'vc4')
+        model = Model(path, arena_size=arena_size)
         if (model.input_shape != ((1, _INPUTS),) or
                 model.output_shape != ((1, _OUTPUTS),) or
                 model.input_dtype != ('f',) or model.output_dtype != ('f',)):
             raise ValueError('Demo requires the supplied FP32 dense model')
         x = np.array(ref['inputs'], dtype=np.float).reshape((1, _INPUTS))
-        first = model.predict([x])[0]
-        _error(first, ref['expected'])
         for _ in range(warmup):
-            model.predict([x])
-        # Measure each predict to avoid wrap ambiguity in a long aggregate span.
-        # Upload/Prepare, correctness checking and printing are outside timing.
-        elapsed = 0
-        last = first
+            _error(model.predict([x])[0], ref['expected'])
+        # Same whole-loop millisecond timing as the original dense acceptance.
+        # Upload/Prepare, warmup, validation and printing remain outside timing.
+        start = time.ticks_ms()
+        last = None
         for _ in range(repeat):
-            start = time.ticks_us()
             last = model.predict([x])[0]
-            delta = time.ticks_diff(time.ticks_us(), start)
-            if delta <= 0:
-                raise RuntimeError('Timer resolution insufficient for this demonstration')
-            elapsed += delta
+        elapsed = time.ticks_diff(time.ticks_ms(), start)
+        if elapsed <= 0:
+            raise RuntimeError('Timer resolution/range insufficient; increase repeat')
         error = _error(last, ref['expected'])
         preview = [float(last[0, row]) for row in range(8)]
         x2 = np.array([-value for value in ref['inputs']], dtype=np.float).reshape((1, _INPUTS))
         changed = model.predict([x2])[0]
         changed_error = _error(changed, ref['expected_negated'])
-        result = {'backend': backend, 'avg_ms': elapsed / (1000.0 * repeat),
+        result = {'backend': backend, 'avg_ms': elapsed / float(repeat),
                   'max_error': error, 'changed_input_error': changed_error,
                   'scores': preview}
         print(backend, 'avg_ms:', result['avg_ms'], 'max_error:', error,
@@ -93,7 +93,10 @@ def _mode(path, ref, backend, warmup, repeat, arena_size):
             if model is not None:
                 model.deinit()
         finally:
-            gc.collect()
+            try:
+                machine.vc4(previous)
+            finally:
+                gc.collect()
 
 
 def _fields(line):
@@ -164,7 +167,8 @@ def run(warmup=8, repeat=30, arena_size=4 * 1024 * 1024, directory=None):
         if hasattr(machine, 'freq'):
             print('ARM Hz:', machine.freq())
         print('model:', location + '/model.tflite')
-        print('warmup:', warmup, 'repeat:', repeat, '(predict only; load/upload excluded)')
+        print('warmup:', warmup, 'repeat:', repeat,
+              '(whole-loop predict timing; backend selected once; load/upload excluded)')
         cpu = _mode(location + '/model.tflite', ref, 'reference', warmup, repeat, arena_size)
         # Rearm after CPU mode, before GPU Prepare. Anchor the retained session,
         # so old successful runs cannot masquerade as this execution's proof.

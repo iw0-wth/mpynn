@@ -39,8 +39,8 @@ print(result['speedup'])
 ## 展示内容
 
 1. 打印板型/build ID、ARM 时钟、模型规模与本次参数。
-2. 用公共 `ml.Model(..., backend='reference')` 跑 CPU。
-3. 销毁 CPU 模型后，使用相同文件与输入构造 `backend='vc4'` 模型。
+2. 在整组运行前用 `machine.vc4(False)` 选择CPU，构造公共 `ml.Model(...)`，保持默认auto后端。
+3. 销毁 CPU 模型后，用 `machine.vc4(True)` 选择VC4并重新构造同模型；重复predict期间不逐次切换后端。
 4. 分别对原输入和取反输入检查所有 1024 个评分；显示前 8 个评分与最大误差。
 5. 打印重复 `predict()` 平均毫秒数和 **CPU / VC4 实测加速比**。
 6. 在本次诊断标记之后确认 `dispatch complete` 和
@@ -64,8 +64,13 @@ VC4 acceleration observed; both inputs and all 1024 scores match.
 
 ## 计时、正确性和资源
 
-- 默认 warmup=8、repeat=30。计时只含 `predict()`，包含其输出分配；不含加载模型、
+- 默认 warmup=8、repeat=30。按原 `vc4_dense_acceptance.py` 的口径，只在整组开始/结束
+  读取一次 `ticks_ms()`，对完整predict循环计时；包含输出分配及循环开销，不含加载模型、
   Prepare/一次性 GPU 权重打包、warmup、golden 检查、打印或日志读取。
+- 固定演示整组选择一次 `machine.vc4` 并使用默认auto模型，避免原demo通过显式backend
+  在每次predict执行额外的Python导入/后端选择/恢复。通用用户模型接口不变。
+  用户同板对照确认旧脚本约6.5x，而原demo约4.7x；此修复统一脚本执行/计时路径，
+  实际加速比仍由下一次板端运行决定，不把代码回归当作性能实测。
 - 这是单层 FC，每次推理为 2,097,152 MAC；GPU 权重为 8 MiB，模型源和 4 MiB arena
   还要单独计入 RAM。两个模型按顺序释放，避免同时保留两份权重/arena。
 - 原输入/取反输入使用随附 binary64 参考值，程序固定使用 `1e-4 + 1e-4*abs(reference)`
