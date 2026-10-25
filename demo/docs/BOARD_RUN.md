@@ -18,11 +18,11 @@ print(machine.memory_info())
 先确认使用镜像 build_id：
 
 ```python
-from demo import board
+from demo.system import board
 board.show()
 ```
 
-输出必须包含：
+下面是此前镜像的 build_id 示例（仅作历史记录）；应将实际输出与所用镜像的构建记录核对，不要求当前构建继续使用此值：
 
 ```text
 6dd7339465dd0cfaca92a60d797510b3a9676c77548f745c38305b556efff28c
@@ -31,11 +31,11 @@ board.show()
 先进行 ML/文件媒体 smoke：
 
 ```python
-from demo import ml
-print(ml.infer('/hello_world_float.tflite', 0.0))
-print(ml.infer_callable('/hello_world_float.tflite', 0.25))
-print(ml.image_tensor('/red.png', '/hello_world_float.tflite'))
-print(len(ml.stream_wav('/input.wav')))
+from demo.ai import media
+print(media.infer('/hello_world_float.tflite', 0.0))
+print(media.infer_callable('/hello_world_float.tflite', 0.25))
+print(media.image_tensor('/red.png', '/hello_world_float.tflite'))
+print(len(media.stream_wav('/input.wav')))
 ```
 
 确认模型、图片和 WAV 文件均已由用户复制到 SD；这些操作不写盘、不采集摄像头、不联网。

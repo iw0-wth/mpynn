@@ -26,7 +26,7 @@
 | 诊断 | storage_info统计、machine.logs、board_info/build_id |
 | 上游约束 | lib只读，覆盖源码在端口副本，mpy-cross/Circle输出在项目build中 |
 
-最新完整主机回归：端口执行 **359项**、结果OK（其中1项可选UBSan跳过），AI **15项通过**。包含LAN配置、ssl包装、DHCP边界、SO_ERROR/NODELAY、shutdown和demo安全测试。这些是host/static证据，不是实板网络结果。
+此前完整主机回归记录（不代表当前代码的完整回归）：端口执行 **359项**、结果OK（其中1项可选UBSan跳过），AI **15项通过**。包含LAN配置、ssl包装、DHCP边界、SO_ERROR/NODELAY、shutdown和demo安全测试。这些是host/static证据，不是实板网络结果。
 真实mbedTLS内存握手通过7项：默认无UTC成功、正确验证成功、错误CA/主机名/时间失败；
 传输8705字节双向记录。内存通道不是Pi网卡或Python HTTPS端到端实测。
 
@@ -34,11 +34,11 @@
 
 1. 实板记录网络DHCP、UDP/TCP/DNS和两种HTTPS模式，验证超时/Ctrl-C/软重启压力。
 2. socket继续补其余可用选项及代码回归；真实TCP半关闭已接入端口自有Circle扩展并有native方法/PacketReceived、bridge和adapter主机测试，后续需Pi实测。IPv6明确不在当前范围。实板结果待用户后续提供，不再阻止代码开发；先完成IPv4 socket代码项再接入machine。
-3. Pin/GPIO 已有 Circle bridge 和主机 baseline；I2C/SPI/IRQ/Timer/PWM/WDT 等新外设仍未接入。machine surface contract 只防止未实现类误暴露，不代表外设已实现；真实 AI 推理/ulab 也尚未完整接入。
+3. Pin/GPIO、I2C、SPI、WDT 已接入并有主机证据；Timer 也已有实现，具体固件暴露的入口由 `board.show()` 只读报告，不能据此判定电气/实板行为。PWM/UART/Pin IRQ 等仍需各自实现与验证。原生 UML/TFLM、ulab、文件 image 和 WAV/PCM audio 已接入；`demo.ai.media` 使用用户文件，`demo.ai.vc4` 提供用户模型的 reference/VC4 输出和计时，后端选择不能替代 dispatch 日志证据。
 4. 端口许可证、上游升级和其它Pi型号的ABI/硬件适配继续保持独立范围。
 
 ## 下一步建议
 
 SD已正常，先运行只读 `board.show()`、`rtc.check()`、`language.run()`；
 再用network演示与电脑配套验证LAN/UDP/TCP/HTTPS。无需再用开发test文件，也不需要
-在每次网络测试前重复格式化/写卡。完整操作见README.md，逐项证据见TEST_CHECKLIST.md。
+在每次网络测试前重复格式化/写卡。完整操作见 [../README.md](../README.md)，逐项证据见 [TEST_CHECKLIST.md](TEST_CHECKLIST.md)。

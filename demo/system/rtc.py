@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 """软件 RTC 每次冷启动从 2000-01-01 UTC 开始；没有电池保持。
 
-from demo import rtc
+from demo.system import rtc
 rtc.show()
 rtc.check()
 rtc.set_utc(2026, 5, 1, 12, 30, 0)  # 用户显式校时；按当前 UTC 填写

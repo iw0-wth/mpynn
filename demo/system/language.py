@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""from demo import language; language.run()  (语法/冻结库检查，不联网、不写盘)。"""
+"""from demo.system import language; language.run()  (语法/冻结库检查，不联网、不写盘)。"""
 
 
 def run():

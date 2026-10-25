@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 """独立 SD 文件演示；write=True 才写盘。绝不格式化或覆盖已有文件。
 
-from demo import storage
+from demo.system import storage
 storage.inspect()
 storage.roundtrip(write=True)  # 已备份 SD 卡后执行；读回并删除自己创建的文件
 storage.prepare(write=True)    # 留下文件用于冷启动验证
