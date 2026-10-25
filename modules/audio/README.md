@@ -57,6 +57,10 @@ then streaming stops. No resampling or channel conversion is performed.
 
 ## Tests and limits
 
+The project test tree is workspace `tests/`, sibling to mpynn (relative to this
+module: `../../../tests/`). User-facing file audio examples are maintained in
+`../../demo/ml.py` and do not import that external test tree.
+
 `tests/raspberrypi/test_audio_file_wav.py` and
 `tests/raspberrypi/test_audio_file_pcm.py` cover fixture construction, chunk
 padding/overflow expectations, bounded callbacks, explicit raw PCM, EOF, and

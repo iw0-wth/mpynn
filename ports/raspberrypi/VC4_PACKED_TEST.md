@@ -1,5 +1,11 @@
 # VC4 packed16 layout experiment
 
+Current script location: workspace `tests/raspberrypi/`, sibling to mpynn
+(relative to this document: `../../../tests/raspberrypi/`). Acceptance/benchmark
+scripts and `make_vc4_*_fixture.py` have moved there. Historical port paths below
+refer to earlier builds; use the external test tree for current source. Normal
+user-model examples are maintained in `mpynn/demo/`.
+
 Status: the user ran both profile images on Pi1B at ARM 700 / CORE 250 MHz.
 Latest repaired-firmware dense report (board build ID
 `36005fb99a00455612b4e0d0e0d95816e5601aaff302e0285f24e963811b2139`) reached
@@ -188,7 +194,7 @@ change is required. Copy these additional files to SD root:
 
 - `vc4_fc_dense_1024x2048.tflite` and `vc4_fc_dense_1024x2048.json` from the
   workspace fixture directory;
-- Replace `vc4_dense_acceptance.py` with the standalone version from the port.
+- Replace `vc4_dense_acceptance.py` with the standalone version from workspace `tests/raspberrypi/`.
   It prints `SCRIPT_VERSION: dense-standalone-3` before any tests and imports no
   common benchmark script. No replacement firmware or common module is needed.
 

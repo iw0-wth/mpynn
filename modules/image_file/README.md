@@ -154,7 +154,9 @@ file failure cleanup, writable-buffer checks, resizing, and preprocessing.
 skipped by host discovery. Host checks do not prove firmware linking or actual
 MicroPython runtime integration; those require a real interpreter/device run.
 
-The additional root `tests/raspberrypi/test_image_api_native.py` compiles and
+The project tests now live in workspace `tests/`, sibling to mpynn (relative to
+this module: `../../../tests/`). File-image user examples are in `../../demo/ml.py`.
+The additional `tests/raspberrypi/test_image_api_native.py` compiles and
 executes actual drawing/filter/byte-copy/iterator binding functions with strict
 host `-Wall -Wextra -Werror`, exercising the pre-existing preprocessing checks
 as well. It checks clipped/extreme coordinates, RGB565 guard bytes, real glyph

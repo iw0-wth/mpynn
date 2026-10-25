@@ -74,6 +74,11 @@ scope. This does not execute Raspberry Pi hardware.
 
 ## Python/native contract tests
 
+All project `tests/...` paths in this historical report now refer to workspace
+`tests/`, sibling to mpynn (`../../../tests/` relative to this document).
+Board smoke/VC4 benchmark scripts also live there; normal user examples are in
+`mpynn/demo/`. The test move does not change the old report's hardware scope.
+
 - `tests/test_uml_binding_host.py`: native C binding ARM syntax and host lifetime,
   conversion, callback, NLR and output-copy tests.
 - `tests/raspberrypi/test_ml_wrapper.py`: public Python `ml.Model` forwards

@@ -17,7 +17,7 @@ Circle heap policy.
 Run the model-zoo smoke:
 
 ```powershell
-D:\anaconda3\python.exe -m pytest -q mpynn/tests/raspberrypi/test_model_zoo_runtime.py -s
+D:\anaconda3\python.exe -m pytest -q tests/raspberrypi/test_model_zoo_runtime.py -s
 ```
 
 Current result: `1 passed`.

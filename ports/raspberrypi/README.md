@@ -47,6 +47,17 @@ No existing library checkout was modified for this extraction. The refactored
 binary still needs board regression; earlier packed16 measurements do not by
 themselves validate this new platform boundary.
 
+## Test tools and demos
+
+The project's development tests are now outside the source repository at
+`../../../tests/raspberrypi/` (workspace/tests, sibling to mpynn). That directory
+owns board smoke/acceptance scripts, VC4 benchmarks and model fixture generators.
+The production port retains manifest/build/image validation tools only. Its
+`config_checks.c` is part of `check-config`, so normal firmware builds do not
+require the external test tree. User-facing examples stay in `../../demo/` and
+must not import development tests. The independent VC4 library manages its own
+tests separately inside its submodule.
+
 ## Build (Windows MSYS2)
 
 The initial environment uses MSYS2 GNU Make, native Python and Arm GCC 15.2.Rel1.
@@ -92,7 +103,7 @@ is counted and ordinary bytes may be discarded; the port does not promise
 lossless unthrottled uploads. Raw-paste flow control and hardware stress tests
 must be checked before long inference workloads.
 
-Paste `../../tests/raspberrypi/repl_smoke.py` through Ctrl-E paste mode, then run
+Paste `../../../tests/raspberrypi/repl_smoke.py` through Ctrl-E paste mode, then run
 again after at least 20 Ctrl-D resets. Test Ctrl-C during a Python busy loop.
 Do not report this test as passed until the UART output is actually captured.
 
@@ -137,7 +148,7 @@ Do not report this test as passed until the UART output is actually captured.
 - No fake `reset_cause`, lightsleep/deepsleep, UART class, Pin.irq,
   Timer/PWM or SDCard is exposed at this stage. Port-owned I2C/SPI/WDT are enabled.
 
-Run `../../tests/raspberrypi/machine_smoke.py` on an actual board. It does not drive
+Run `../../../tests/raspberrypi/machine_smoke.py` on an actual board. It does not drive
 GPIO outputs automatically. Electrical latch/edge behavior needs a scope test.
 The UART TX bridge now retries temporary buffer-full writes with a 250 ms
 no-progress bound; errors/timeouts increment a diagnostic counter rather than
@@ -210,7 +221,7 @@ Standard MicroPython oofatfs is the sole active filesystem implementation.
 - No RTC is installed: writable FAT timestamps use the configured fixed fallback
   (2018-01-01), not a fabricated wall-clock time. No hot-swap support is claimed.
 
-Use `../../tests/raspberrypi/sd_smoke.py` for non-destructive board validation.
+Use `../../../tests/raspberrypi/sd_smoke.py` for non-destructive board validation.
 For an intentional writable test, use only a backed-up disposable SD card.
 The startup mount is already writable; use the root VFS directly:
 
@@ -358,7 +369,7 @@ command writes a physical card automatically.
   networking; concurrent USB/SD/REPL/inference stress tests are still required.
 
 User-facing standalone demos and the acceptance checklist are in `../../demo/`;
-development unit/host test files remain under `../../tests/raspberrypi/` and are
+development unit/host test files remain under `../../../tests/raspberrypi/` and are
 not the user demo package. User has confirmed SD reads/writes now work on Pi1B
 Rev2; network and complete power-persistence/Thonny evidence are tracked separately. RTC is a software wall clock starting at
 2000-01-01 on cold boot; datetime/init and time calendar APIs share it. Default

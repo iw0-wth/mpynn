@@ -226,7 +226,7 @@ runtime status. The speedup is `CPU average / VC4 average`; model load and first
   `make_vc4_fc_fixture.py`; for example:
 
   ```bash
-  /d/anaconda3/python.exe ports/raspberrypi/make_vc4_fc_fixture.py \
+  /d/anaconda3/python.exe ../tests/raspberrypi/make_vc4_fc_fixture.py \
     build/host-tests/vc4_fc_fp32.tflite --input-depth 1024 --output-depth 16
   ```
 

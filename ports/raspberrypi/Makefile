@@ -147,7 +147,7 @@ $(BUILD)/socket_errno_bridge.o: CFLAGS += -idirafter $(CIRCLEHOME)/include
 .PHONY: circle all check-config
 all: check-config $(FW_DIR)/kernel.img
 check-config:
-	$(Q)$(CC) $(CFLAGS) -fsyntax-only $(MPYNN_TOP)/tests/raspberrypi/config_checks.c
+	$(Q)$(CC) $(CFLAGS) -fsyntax-only config_checks.c
 # Configuration-signed build stage: never reuse another board's Circle objects.
 circle:
 	$(Q)$(PYTHON) build_circle.py --source "$(CIRCLEHOME)" --build "$(CIRCLE_BUILD)" \

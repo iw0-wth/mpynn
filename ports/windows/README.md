@@ -39,7 +39,7 @@ Run the runtime test with `MPYNN_ML_RUNTIME` pointing at the resulting executabl
 
 ```powershell
 $env:MPYNN_ML_RUNTIME = 'D:\openmv_aicore\mpynn\build\windows-ml\mpynn-ml.exe'
-D:\anaconda3\python.exe -m pytest -q mpynn/tests/raspberrypi/test_ml_native_runtime.py -s
+D:\anaconda3\python.exe -m pytest -q tests/raspberrypi/test_ml_native_runtime.py -s
 ```
 
 The verified result is `1 passed`. This validates the host ABI and ML behavior; it
@@ -50,7 +50,7 @@ is not Pi hardware evidence.
 The repository-level model smoke is:
 
 ```powershell
-D:\anaconda3\python.exe -m pytest -q mpynn/tests/raspberrypi/test_model_zoo_runtime.py -s
+D:\anaconda3\python.exe -m pytest -q tests/raspberrypi/test_model_zoo_runtime.py -s
 ```
 
 It runs the user-corrected `D:/openmv_aicore/ml_text_cls/text_cls_tflm.tflite`,
