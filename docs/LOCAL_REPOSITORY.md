@@ -15,9 +15,9 @@ repositories. Paths retain the OpenMV layout, including `lib/tflm/libtflm`.
 
 | Path | Remote | Pinned commit |
 | --- | --- | --- |
-| lib/tinyusb | https://gitee.com/wth_iw0/tinyusb | aa0fc2e08f1c2dd6f026a431e8989357fbb4c5bf |
-| lib/micropython | https://gitee.com/wth_iw0/micropython | 0fd6c573ea815774668bbb16b8e197c8822368b2 |
-| modules/ulab | https://gitee.com/wth_iw0/micropython-ulab | d161443327173bcf94c2616cb5de37e290af71ca |
+| lib/tinyusb | https://github.com/hathach/tinyusb | aa0fc2e08f1c2dd6f026a431e8989357fbb4c5bf |
+| lib/micropython | https://github.com/micropython/micropython | 0fd6c573ea815774668bbb16b8e197c8822368b2 |
+| modules/ulab | https://github.com/v923z/micropython-ulab | d161443327173bcf94c2616cb5de37e290af71ca |
 | lib/tflm/libtflm | https://gitee.com/wth_iw0/libtflm-mpynn | 9008e63d0acb5a3c739a46af85636e837c6835b2 |
 | lib/vc4-runtime | https://gitee.com/wth_iw0/vc4-runtime | 92faccf96be7edb65ddfe2138192e0ac2d6f793f |
 | lib/circle | https://gitee.com/wth_iw0/circle | 7a81e1b480fe7d19fc1fc695b89bff0a0848f44b |

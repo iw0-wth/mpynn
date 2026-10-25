@@ -1,15 +1,15 @@
 [submodule "src/micropython"]
 	path = lib/micropython
-	url = https://gitee.com/wth_iw0/micropython
+	url = https://github.com/micropython/micropython
 [submodule "src/omv/modules/ulab"]
 	path = modules/ulab
-	url = https://gitee.com/wth_iw0/micropython-ulab
+	url = https://github.com/v923z/micropython-ulab
 [submodule "src/lib/tflm/libtflm"]
 	path = lib/tflm/libtflm
 	url = https://gitee.com/wth_iw0/libtflm-mpynn
 [submodule "src/lib/tinyusb"]
 	path = lib/tinyusb
-	url = https://gitee.com/wth_iw0/tinyusb
+	url = https://github.com/hathach/tinyusb
 [submodule "tools/alif"]
 	path = tools/alif
 	url = https://github.com/micropython/alif-security-toolkit.git
