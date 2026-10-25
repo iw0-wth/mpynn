@@ -1,0 +1,10 @@
+# mpynn / Circle, Raspberry Pi 1 Model B only.
+arm_64bit=0
+initial_turbo=0
+# Stable Pi1B baseline confirmed on the board; runtime logs measured clocks.
+arm_freq=700
+core_freq=250
+kernel=kernel.img
+enable_uart=1
+# Stable 700/250 baseline: no over_voltage override.
+# Do not select gpu_mem=16 cut-down firmware: future QPU work needs full firmware.

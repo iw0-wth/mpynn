@@ -1,0 +1,50 @@
+[
+    {
+        "sha256":  "867fdb2e62f10bc07d1ad469ddec8b8ac6b94a5f042875b6af4b2b00b38f26ea",
+        "path":  "lib/circle/include/circle/net/netconnection.h"
+    },
+    {
+        "sha256":  "2ab0195b2dca18878d9c7c85918d45385c0f726897402d200f465ac0994bc8fb",
+        "path":  "lib/circle/include/circle/net/tcpconnection.h"
+    },
+    {
+        "sha256":  "79a37fac9a8552a80aac30e884602a52b11ff2299b9b9af5fdbcaae9a408d62a",
+        "path":  "lib/circle/include/circle/net/transportlayer.h"
+    },
+    {
+        "sha256":  "bd8de69e203a680cb79deb13f0cec76ab2d6f25065f460ed876cb3fe4205e489",
+        "path":  "lib/circle/lib/net/netconnection.cpp"
+    },
+    {
+        "sha256":  "fb992addf028ebc7ff8393c535842bb195c0e83bc6e56ed706c06041085c9dd2",
+        "path":  "lib/circle/lib/net/tcpconnection.cpp"
+    },
+    {
+        "sha256":  "cd8a23ff4985d739f841a3a6b0705a3c12fc81f1f4aea938aae83e1fe7d4e587",
+        "path":  "lib/circle/lib/net/transportlayer.cpp"
+    },
+    {
+        "sha256":  "5244ae0e1b718408007950b607031bc64ff74bda8722d58bacaf739d8d19f507",
+        "path":  "lib/circle/lib/net/dnsclient.cpp"
+    },
+    {
+        "sha256":  "fcf51ad7036a6e72e4033cfb57d30cb46fe4f8ae7ea790de7023f6163a7bcd98",
+        "path":  "lib/circle/addon/SDCard/sdhost.cpp"
+    },
+    {
+        "sha256":  "21306b29a81718110d11f21e09e49bcbbd51b96b58a56be5b5d7115b67dbe29a",
+        "path":  "lib/micropython/extmod/modsocket.c"
+    },
+    {
+        "sha256":  "fec70e62e625faf80fb94ab4d9813ada90cdf0872a8624e8fdbaa9e3d686cb0e",
+        "path":  "lib/micropython/tools/makemanifest.py"
+    },
+    {
+        "sha256":  "164307a669e5b35726823677e279c96a97928881276775bcf0e0b6652629f251",
+        "path":  "lib/micropython/lib/micropython-lib/python-ecosys/requests/requests/__init__.py"
+    },
+    {
+        "sha256":  "ea4e15cdfa1f6e33d9a03000cce9307d412a31f2129f0e0c9dce4fbefd50ff71",
+        "path":  "lib/micropython/lib/micropython-lib/python-ecosys/requests/README.md"
+    }
+]

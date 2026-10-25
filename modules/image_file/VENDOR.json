@@ -1,0 +1,11 @@
+{
+  "project": "LodePNG (OpenMV copy)",
+  "version": "20220109",
+  "source_directory": "lib/imlib",
+  "license": "LodePNG zlib-style notice retained in source",
+  "modifications": [],
+  "sha256": {
+    "lodepng.c": "f05c7c2de8cb43cfdbffd65b878f329553644df377c8e642e2681122a3ffc120",
+    "lodepng.h": "948d4776d2402e554cbff95ca7a5acc348f18583f5d992c1dc1db741aee6dc95"
+  }
+}
